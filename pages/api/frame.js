@@ -1,36 +1,36 @@
-import { ImageResponse } from "@vercel/og";
+// A minimal frame endpoint that always returns a valid PNG
+// This avoids OG runtime issues and confirms the route works.
 
-// Use Node runtime (Edge can silently fail)
+import { createCanvas } from "canvas";
+
 export const config = {
   runtime: "nodejs",
 };
 
 export default async function handler(req, res) {
   try {
-    // Simple test render first
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "linear-gradient(to bottom right, #0f172a, #1e293b)",
-            color: "white",
-            fontFamily: "system-ui",
-            fontSize: 48,
-          }}
-        >
-          Hello Farcaster 👋
-        </div>
-      ),
-      {
-        width: 1200,
-        height: 630,
-      }
-    );
+    const width = 1200;
+    const height = 630;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+
+    // background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#0f172a");
+    gradient.addColorStop(1, "#1e293b");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // text
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 64px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Hello Farcaster 👋", width / 2, height / 2);
+
+    const buffer = canvas.toBuffer("image/png");
+    res.setHeader("Content-Type", "image/png");
+    res.status(200).send(buffer);
   } catch (err) {
     console.error("Frame error:", err);
     res.status(500).json({ error: err.message });
