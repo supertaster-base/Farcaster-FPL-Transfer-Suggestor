@@ -1,12 +1,4 @@
-// A minimal frame endpoint that always returns a valid PNG
-// This avoids OG runtime issues and confirms the route works.
-
-import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
-
-GlobalFonts.registerFromPath(
-  "./public/NotoSans-Regular.ttf",
-  "Noto Sans"
-);
+import { createCanvas } from "canvas";
 
 export const config = {
   runtime: "nodejs",
@@ -26,12 +18,13 @@ export default async function handler(req, res) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // text
+    // draw simple SVG text path
+    const text = "Hello Farcaster 👋";
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 64px Noto Sans";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Hello Farcaster 👋", width / 2, height / 2);
+    ctx.font = "64px sans-serif";
+    ctx.fillText(text, width / 2, height / 2);
 
     const buffer = canvas.toBuffer("image/png");
     res.setHeader("Content-Type", "image/png");
@@ -41,3 +34,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
