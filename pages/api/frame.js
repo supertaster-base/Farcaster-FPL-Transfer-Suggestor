@@ -1,7 +1,12 @@
 // A minimal frame endpoint that always returns a valid PNG
 // This avoids OG runtime issues and confirms the route works.
 
-import { createCanvas } from "canvas";
+import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
+
+GlobalFonts.registerFromPath(
+  "./public/NotoSans-Regular.ttf",
+  "Noto Sans"
+);
 
 export const config = {
   runtime: "nodejs",
@@ -23,7 +28,7 @@ export default async function handler(req, res) {
 
     // text
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 64px sans-serif";
+    ctx.font = "bold 64px Noto Sans";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Hello Farcaster 👋", width / 2, height / 2);
