@@ -1,0 +1,8 @@
+{
+  "name": "FPL Transfer Suggestor",
+  "slug": "fpl-transfer-suggestor",
+  "description": "Suggests Fantasy Premier League transfers for your team.",
+  "iconUrl": "",
+  "frameUrl": "https://yourdomain.com/",
+  "permissions": []
+}
