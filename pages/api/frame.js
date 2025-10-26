@@ -6,13 +6,11 @@ export const config = {
 
 export default async function handler(req) {
   const { searchParams } = new URL(req.url);
-  const managerId = searchParams.get("managerId") || "619981"; // default manager
+  const managerId = searchParams.get("managerId") || "619981";
 
-  // Fetch live data from your suggest API
- // Use local URL as fallback if no environment variable set
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`);
-
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://farcaster-fpl-suggestor.vercel.app";
+  const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`);
   const data = await res.json();
 
   const suggestion = data?.suggestion || {
