@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
     // text
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 64px Arial";
+    ctx.font = "bold 64px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Hello Farcaster 👋", width / 2, height / 2);
