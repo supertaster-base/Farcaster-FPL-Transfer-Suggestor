@@ -8,10 +8,7 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const managerId = searchParams.get("managerId") || "619981";
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://farcaster-fpl-suggestor.vercel.app";
-  const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`);
-  const data = await res.json();
+  const res = await fetch(`${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "http://localhost:3000"}/api/suggest?managerId=${managerId}`);
 
   const suggestion = data?.suggestion || {
     out: "Player A",
