@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import dynamic from "next/dynamic";
 import React, { useState, useEffect } from "react";
 import FarcasterHead from "../components/FarcasterHead";
-import FarcasterHead from "../components/FarcasterHead";
-import Head from 'next/head';
+import Head from "next/head";
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
