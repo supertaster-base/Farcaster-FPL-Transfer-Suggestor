@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { sdk } from "@farcaster/frame-sdk";
 import FarcasterHead from "../components/FarcasterHead";
+import Head from 'next/head';
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
