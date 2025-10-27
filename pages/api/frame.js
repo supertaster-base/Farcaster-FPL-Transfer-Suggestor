@@ -7,21 +7,25 @@ export default function handler() {
     (
       <div
         style={{
-          backgroundColor: "#0f172a",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           width: "100%",
           height: "100%",
-          fontSize: 64,
-          fontFamily: "sans-serif",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to bottom right,#0f172a,#1e293b)",
+          color: "white",
+          fontFamily: "system-ui, sans-serif",
         }}
       >
-        Frame baseline ✅
+        <h1 style={{ fontSize: 64, margin: 0 }}>Farcaster FPL</h1>
+        <p style={{ fontSize: 36, marginTop: 20, color: "#a5b4fc" }}>
+          Frame Gradient Test 🎨
+        </p>
       </div>
     ),
     { width: 1200, height: 630 }
   );
 }
+
 
