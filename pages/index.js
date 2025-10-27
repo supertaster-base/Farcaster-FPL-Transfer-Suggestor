@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { sdk } from "@farcaster/frame-sdk";
+import dynamic from "next/dynamic";
+import React, { useState, useEffect } from "react";
+import FarcasterHead from "../components/FarcasterHead";
 import FarcasterHead from "../components/FarcasterHead";
 import Head from 'next/head';
 
@@ -11,6 +13,26 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    async function initFarcaster() {
+      // Only run this in the browser (not on the server)
+      if (typeof window !== "undefined") {
+        try {
+          // Dynamically import the SDK so Next.js doesn’t try to load it during SSR
+          const { sdk } = await import("@farcaster/frame-sdk");
+          // Let Warpcast know your mini app is ready
+          sdk.actions.ready();
+          console.log("✅ Farcaster Mini App ready");
+        } catch (err) {
+          console.error("Farcaster SDK init error:", err);
+        }
+      }
+    }
+
+    initFarcaster();
+  }, []);
+
 
   async function runSuggestion() {
     setLoading(true);
