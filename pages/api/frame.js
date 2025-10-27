@@ -1,6 +1,8 @@
 import { ImageResponse } from "@vercel/og";
 
-export const config = { runtime: "nodejs" };
+export const config = {
+  runtime: "nodejs", // keep node for stability
+};
 
 export default async function handler() {
   return new ImageResponse(
@@ -15,7 +17,7 @@ export default async function handler() {
           justifyContent: "center",
           color: "white",
           fontSize: 64,
-          fontFamily: "system-ui",
+          fontFamily: "system-ui, sans-serif",
         }}
       >
         Hello Farcaster 👋
