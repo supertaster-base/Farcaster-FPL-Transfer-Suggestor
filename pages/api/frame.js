@@ -2,28 +2,8 @@ import { ImageResponse } from "@vercel/og";
 
 export const config = { runtime: "edge" };
 
-export default async function handler(req) {
-  const { searchParams } = new URL(req.url);
-  const managerId = searchParams.get("managerId") || "619981";
-
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-
-  let suggestion;
-  try {
-    const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      suggestion = data?.suggestion;
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  const display = suggestion || {
+export default function handler() {
+  const display = {
     out: "Your team looks great 💪",
     in: "Save your transfer 😉",
     position: "—",
@@ -82,6 +62,7 @@ export default async function handler(req) {
     { width: 1200, height: 630 }
   );
 }
+
 
 
 
