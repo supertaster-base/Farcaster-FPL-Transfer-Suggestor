@@ -40,17 +40,23 @@ export default function PreviewFrame() {
         }}
       />
 
-      <iframe
-        src={frameUrl}
-        title="Frame preview"
-        style={{
-          width: 600,
-          height: 315,
-          borderRadius: 16,
-          border: "2px solid #334155",
-          background: "#1e1b4b",
-        }}
-      />
+ <img
+  src={frameUrl}
+  alt="Frame preview"
+  style={{
+    width: 600,
+    height: 315,
+    objectFit: "cover",
+    borderRadius: 16,
+    border: "2px solid #334155",
+    background: "#1e1b4b",
+  }}
+  onError={(e) => {
+    e.target.src = "";
+    e.target.alt = "❌ Could not load frame image.";
+  }}
+/>
+
 
       <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
         <button
