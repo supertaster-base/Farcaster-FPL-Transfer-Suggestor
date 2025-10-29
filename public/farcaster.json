@@ -1,12 +1,10 @@
 {
-  "name": "FPL Transfer Suggestor",
-  "description": "Suggests the best Fantasy Premier League transfer using live data.",
+  "name": "Farcaster FPL",
+  "description": "Get live Fantasy Premier League transfer suggestions directly inside Warpcast.",
   "icon": "https://farcaster-fpl-transfer-suggestor.vercel.app/icon.png",
   "home_url": "https://farcaster-fpl-transfer-suggestor.vercel.app",
   "frame_url": "https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame",
+  "cover_image": "https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
   "developer": "Supertaster Base",
-  "supported_actions": [
-    "post",
-    "link"
-  ]
+  "supported_actions": ["post", "link"]
 }
