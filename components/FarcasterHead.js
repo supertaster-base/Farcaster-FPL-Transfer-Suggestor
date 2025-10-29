@@ -22,6 +22,11 @@ export default function FarcasterHead() {
       />
       <meta name="fc:frame:button:1" content="Next Suggestion" />
       <meta name="fc:frame:button:1:action" content="post" />
+      <meta
+       name="fc:frame:button:1:target"
+       content="https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame-next"
+      />
+
       <meta name="fc:frame:button:2" content="Open App" />
       <meta name="fc:frame:button:2:action" content="link" />
       <meta
