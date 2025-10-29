@@ -9,7 +9,6 @@
 \
 export const config = \{ runtime: "edge" \};\
 \
-// Utility to fetch fresh suggestions\
 async function getSuggestion(managerId) \{\
   const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";\
   const res = await fetch(`$\{baseUrl\}/api/suggest?managerId=$\{managerId\}`, \{\
@@ -27,7 +26,6 @@ export default async function handler(req) \{\
 \
   let suggestion;\
   try \{\
-    // Fetch multiple possible suggestions by making several calls\
     const suggestions = [];\
     for (let x = 0; x < 3; x++) \{\
       try \{\
@@ -47,9 +45,7 @@ export default async function handler(req) \{\
     form: "\'97",\
   \};\
 \
-  // Increment counter for next frame\
   const nextIndex = (index + 1) % 3;\
-\
   const nextUrl = `https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame-next?managerId=$\{managerId\}&i=$\{nextIndex\}`;\
 \
   return new ImageResponse(\
@@ -94,9 +90,11 @@ export default async function handler(req) \{\
       headers: \{\
         "fc:frame": "vNext",\
         "fc:frame:image": nextUrl,\
+\
         "fc:frame:button:1": "Next Suggestion",\
         "fc:frame:button:1:action": "post",\
         "fc:frame:button:1:target": nextUrl,\
+\
         "fc:frame:button:2": "Open App",\
         "fc:frame:button:2:action": "link",\
         "fc:frame:button:2:target":\
@@ -104,6 +102,4 @@ export default async function handler(req) \{\
       \},\
     \}\
   );\
-\}\
-\
-}
+\}}
