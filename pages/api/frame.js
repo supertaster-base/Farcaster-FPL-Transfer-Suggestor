@@ -49,7 +49,6 @@ export default async function handler(req) {
         overflow: "hidden",
       }}
     >
-      {/* glowing gradient rings */}
       <div
         style={{
           position: "absolute",
@@ -76,7 +75,6 @@ export default async function handler(req) {
         }}
       ></div>
 
-      {/* title */}
       <div
         style={{
           fontSize: 54,
@@ -90,7 +88,6 @@ export default async function handler(req) {
         FPL Transfer Suggestion 🔄
       </div>
 
-      {/* transfer info */}
       <div
         style={{
           background: "rgba(15, 23, 42, 0.75)",
@@ -112,7 +109,6 @@ export default async function handler(req) {
         </div>
       </div>
 
-      {/* tip */}
       <div
         style={{
           marginTop: 40,
@@ -127,18 +123,9 @@ export default async function handler(req) {
     {
       width: 1200,
       height: 630,
-      headers: {
-        "fc:frame": "vNext",
-        "fc:frame:image": nextUrl,
-
-        "fc:frame:button:1": "Next Suggestion",
-        "fc:frame:button:1:action": "post",
-        "fc:frame:button:1:target": nextUrl,
-
-        "fc:frame:button:2": "Open App",
-        "fc:frame:button:2:action": "link",
-        "fc:frame:button:2:target": baseUrl,
-      },
+      // ✅ no headers with colons, just plain metadata
+      emoji: "🔄",
+      fonts: [],
     }
   );
 }
