@@ -124,8 +124,18 @@ export default async function handler(req) {
       width: 1200,
       height: 630,
       // ✅ no headers with colons, just plain metadata
-      emoji: "🔄",
-      fonts: [],
+            emoji: "🔄",
+      contentType: "image/png",
+      fonts: [
+        {
+          name: "Inter",
+          data: await fetch(
+            "https://github.com/google/fonts/raw/main/ofl/inter/Inter-Regular.ttf"
+          ).then((res) => res.arrayBuffer()),
+          style: "normal",
+          weight: 400,
+        },
+      ],
     }
   );
 }

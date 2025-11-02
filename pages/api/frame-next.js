@@ -137,28 +137,22 @@ export default async function handler(req) {
         }}
       >
         Tap again for next suggestion →
-      </div>
-    </div>,
-    {
-      width: 1200,
-      height: 630,
-      headers: {
-        "fc:frame": "vNext",
-        "fc:frame:image": nextUrl,
-
-        "fc:frame:button:1": "Next Suggestion",
-        "fc:frame:button:1:action": "post",
-        "fc:frame:button:1:target": nextUrl,
-
-        "fc:frame:button:2": "Share This Transfer",
-        "fc:frame:button:2:action": "post_redirect",
-        "fc:frame:button:2:target": shareUrl,
-
-        "fc:frame:button:3": "Open App",
-        "fc:frame:button:3:action": "link",
-        "fc:frame:button:3:target":
-          "https://farcaster-fpl-transfer-suggestor.vercel.app",
+    </div>
+  </div>,
+  {
+    width: 1200,
+    height: 630,
+    contentType: "image/png",
+    fonts: [
+      {
+        name: "Inter",
+        data: await fetch(
+          "https://github.com/google/fonts/raw/main/ofl/inter/Inter-Regular.ttf"
+        ).then((res) => res.arrayBuffer()),
+        style: "normal",
+        weight: 400,
       },
-    }
-  );
+    ],
+  }
+);
 }
