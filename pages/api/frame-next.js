@@ -139,15 +139,15 @@ export default async function handler(req) {
         Tap again for next suggestion →
     </div>
   </div>,
-      {
+          {
       width: 1200,
       height: 630,
       contentType: "image/png",
       fonts: [
         {
-          name: "Noto Sans",
+          name: "Roboto",
           data: await fetch(
-            "https://og-playground.vercel.app/static/NotoSans-Regular.ttf"
+            "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Regular.ttf"
           ).then((res) => res.arrayBuffer()),
           weight: 400,
           style: "normal",
