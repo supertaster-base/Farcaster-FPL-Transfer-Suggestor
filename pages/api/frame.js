@@ -8,7 +8,7 @@ export default async function handler(req) {
     const managerId = searchParams.get("managerId") || "619981";
     const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
 
-    // Default fallback text
+    // Default fallback
     let display = {
       out: "Your team looks great 💪",
       in: "Save your transfer 😉",
@@ -16,7 +16,7 @@ export default async function handler(req) {
       form: "—",
     };
 
-    // Fetch suggestion data
+    // Try fetching a live suggestion
     try {
       const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`, {
         cache: "no-store",
@@ -27,18 +27,17 @@ export default async function handler(req) {
           display = data.suggestion;
         }
       }
-    } catch (err) {
-      console.error("Fetch failed:", err);
+    } catch (e) {
+      console.error("Suggestion fetch failed:", e);
     }
 
-    // Prepare URLs for frame buttons
     const nextUrl = `${baseUrl}/api/frame-next?managerId=${managerId}`;
     const shareText = encodeURIComponent(
       `FPL Suggestion — ${display.out} → ${display.in} via ${baseUrl}`
     );
     const shareUrl = `https://warpcast.com/~/compose?text=${shareText}`;
 
-    // Create image
+    // ✅ Every div that has more than one child now has display:flex
     const image = new ImageResponse(
       (
         <div
@@ -56,8 +55,12 @@ export default async function handler(req) {
             textAlign: "center",
           }}
         >
+          {/* Title */}
           <div
             style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               fontSize: 54,
               color: "#a5b4fc",
               fontWeight: 700,
@@ -67,6 +70,7 @@ export default async function handler(req) {
             FPL Transfer Suggestion 🔄
           </div>
 
+          {/* Transfer line */}
           <div
             style={{
               display: "flex",
@@ -81,11 +85,31 @@ export default async function handler(req) {
             <span style={{ color: "#4ade80" }}>{display.in}</span>
           </div>
 
-          <div style={{ fontSize: 26, color: "#c7d2fe", marginBottom: 20 }}>
+          {/* Position and form */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 26,
+              color: "#c7d2fe",
+              marginBottom: 20,
+            }}
+          >
             Position: {display.position} | Form: {display.form}
           </div>
 
-          <div style={{ fontSize: 22, color: "#818cf8", opacity: 0.8 }}>
+          {/* Tip line */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 22,
+              color: "#818cf8",
+              opacity: 0.8,
+            }}
+          >
             Tap again for next suggestion →
           </div>
         </div>
@@ -93,33 +117,30 @@ export default async function handler(req) {
       {
         width: 1200,
         height: 630,
+        headers: {
+          "Content-Type": "image/png",
+          "fc:frame": "vNext",
+          "fc:frame:image": `${baseUrl}/api/frame?managerId=${managerId}`,
+          "fc:frame:button:1": "Next Suggestion",
+          "fc:frame:button:1:action": "post",
+          "fc:frame:button:1:target": nextUrl,
+          "fc:frame:button:2": "Share Transfer",
+          "fc:frame:button:2:action": "post_redirect",
+          "fc:frame:button:2:target": shareUrl,
+          "fc:frame:button:3": "Open App",
+          "fc:frame:button:3:action": "link",
+          "fc:frame:button:3:target":
+            "https://farcaster-fpl-transfer-suggestor.vercel.app",
+        },
       }
     );
 
-    // ✅ Return image with Farcaster frame headers
-    return new Response(await image.arrayBuffer(), {
-      headers: {
-        "Content-Type": "image/png",
-        "fc:frame": "vNext",
-        "fc:frame:image": `${baseUrl}/api/frame?managerId=${managerId}`,
-        "fc:frame:button:1": "Next Suggestion",
-        "fc:frame:button:1:action": "post",
-        "fc:frame:button:1:target": nextUrl,
-        "fc:frame:button:2": "Share Transfer",
-        "fc:frame:button:2:action": "post_redirect",
-        "fc:frame:button:2:target": shareUrl,
-        "fc:frame:button:3": "Open App",
-        "fc:frame:button:3:action": "link",
-        "fc:frame:button:3:target":
-          "https://farcaster-fpl-transfer-suggestor.vercel.app",
-      },
-    });
+    return image;
   } catch (err) {
     console.error("Frame generation failed:", err);
-    return new Response(
-      JSON.stringify({ error: err.message || "Frame render failed" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
-
