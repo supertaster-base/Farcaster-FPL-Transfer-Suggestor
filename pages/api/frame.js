@@ -117,19 +117,18 @@ export default async function handler(req) {
           opacity: 0.8,
         }}
       >
-        Tap again for next suggestion →
+      Tap again for next suggestion →
       </div>
     </div>,
-        {
+    {
       width: 1200,
       height: 630,
       contentType: "image/png",
+      // ✅ Use a built-in generic font (no external request)
       fonts: [
         {
-          name: "IBM Plex Sans",
-          data: await fetch(
-            "https://cdn.jsdelivr.net/gh/IBM/plex@1.9.0/IBM-Plex-Sans/fonts/complete/ttf/IBM-Plex-Sans-Regular.ttf"
-          ).then((res) => res.arrayBuffer()),
+          name: "Arial",
+          data: undefined, // no need to load, uses fallback
           weight: 400,
           style: "normal",
         },
