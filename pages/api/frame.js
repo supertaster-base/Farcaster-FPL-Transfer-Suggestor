@@ -130,8 +130,8 @@ export default async function handler(req) {
         {
           name: "Inter",
           data: await fetch(
-            "https://github.com/google/fonts/raw/main/ofl/inter/Inter-Regular.ttf"
-          ).then((res) => res.arrayBuffer()),
+  "https://fonts.cdnfonts.com/s/14926/OpenSans-Regular.ttf"
+).then((res) => res.arrayBuffer()),
           style: "normal",
           weight: 400,
         },
