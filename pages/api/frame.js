@@ -38,7 +38,7 @@ export default async function handler(req) {
         style={{
           width: "100%",
           height: "100%",
-          display: "flex", // ✅ top container must be flex
+          display: "flex", // ✅ top-level required
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
@@ -50,7 +50,7 @@ export default async function handler(req) {
           overflow: "hidden",
         }}
       >
-        {/* glowing gradient rings */}
+        {/* glowing gradients */}
         <div
           style={{
             position: "absolute",
@@ -80,6 +80,9 @@ export default async function handler(req) {
         {/* title */}
         <div
           style={{
+            display: "flex", // ✅ required for multiple text nodes
+            justifyContent: "center",
+            alignItems: "center",
             fontSize: 54,
             color: "#a5b4fc",
             fontWeight: 700,
@@ -94,8 +97,9 @@ export default async function handler(req) {
         {/* suggestion card */}
         <div
           style={{
-            display: "flex", // ✅ added to fix OG multi-child rule
+            display: "flex", // ✅ required
             flexDirection: "column",
+            alignItems: "center",
             background: "rgba(15, 23, 42, 0.75)",
             border: "1px solid rgba(129,140,248,0.3)",
             borderRadius: 20,
@@ -104,7 +108,15 @@ export default async function handler(req) {
             backdropFilter: "blur(10px)",
           }}
         >
-          <div style={{ fontSize: 48, marginBottom: 8, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex", // ✅ added (this was the missing one!)
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 48,
+              marginBottom: 8,
+            }}
+          >
             <span style={{ color: "#f87171" }}>{display.out}</span>
             <span style={{ margin: "0 40px", color: "#a5b4fc" }}>→</span>
             <span style={{ color: "#4ade80" }}>{display.in}</span>
@@ -118,6 +130,9 @@ export default async function handler(req) {
         {/* footer */}
         <div
           style={{
+            display: "flex", // ✅ required for OG
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: 40,
             fontSize: 22,
             color: "#818cf8",
