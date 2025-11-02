@@ -8,7 +8,7 @@ export default async function handler(req) {
     const managerId = searchParams.get("managerId") || "619981";
     const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
 
-    // Default fallback
+    // Default values
     let display = {
       out: "Your team looks great 💪",
       in: "Save your transfer 😉",
@@ -16,7 +16,7 @@ export default async function handler(req) {
       form: "—",
     };
 
-    // Try fetching a live suggestion
+    // Fetch suggestion data
     try {
       const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`, {
         cache: "no-store",
@@ -27,8 +27,8 @@ export default async function handler(req) {
           display = data.suggestion;
         }
       }
-    } catch (e) {
-      console.error("Suggestion fetch failed:", e);
+    } catch (err) {
+      console.error("Suggest fetch failed:", err);
     }
 
     const nextUrl = `${baseUrl}/api/frame-next?managerId=${managerId}`;
@@ -37,7 +37,7 @@ export default async function handler(req) {
     );
     const shareUrl = `https://warpcast.com/~/compose?text=${shareText}`;
 
-    // ✅ Every div that has more than one child now has display:flex
+    // Create image first (this must not include headers)
     const image = new ImageResponse(
       (
         <div
@@ -55,7 +55,6 @@ export default async function handler(req) {
             textAlign: "center",
           }}
         >
-          {/* Title */}
           <div
             style={{
               display: "flex",
@@ -70,7 +69,6 @@ export default async function handler(req) {
             FPL Transfer Suggestion 🔄
           </div>
 
-          {/* Transfer line */}
           <div
             style={{
               display: "flex",
@@ -85,7 +83,6 @@ export default async function handler(req) {
             <span style={{ color: "#4ade80" }}>{display.in}</span>
           </div>
 
-          {/* Position and form */}
           <div
             style={{
               display: "flex",
@@ -99,7 +96,6 @@ export default async function handler(req) {
             Position: {display.position} | Form: {display.form}
           </div>
 
-          {/* Tip line */}
           <div
             style={{
               display: "flex",
@@ -114,28 +110,28 @@ export default async function handler(req) {
           </div>
         </div>
       ),
-      {
-        width: 1200,
-        height: 630,
-        headers: {
-          "Content-Type": "image/png",
-          "fc:frame": "vNext",
-          "fc:frame:image": `${baseUrl}/api/frame?managerId=${managerId}`,
-          "fc:frame:button:1": "Next Suggestion",
-          "fc:frame:button:1:action": "post",
-          "fc:frame:button:1:target": nextUrl,
-          "fc:frame:button:2": "Share Transfer",
-          "fc:frame:button:2:action": "post_redirect",
-          "fc:frame:button:2:target": shareUrl,
-          "fc:frame:button:3": "Open App",
-          "fc:frame:button:3:action": "link",
-          "fc:frame:button:3:target":
-            "https://farcaster-fpl-transfer-suggestor.vercel.app",
-        },
-      }
+      { width: 1200, height: 630 }
     );
 
-    return image;
+    // ✅ Return the image as PNG with proper Farcaster headers
+    return new Response(await image.arrayBuffer(), {
+      headers: {
+        "Content-Type": "image/png",
+        // Farcaster headers
+        "fc:frame": "vNext",
+        "fc:frame:image": `${baseUrl}/api/frame?managerId=${managerId}`,
+        "fc:frame:button:1": "Next Suggestion",
+        "fc:frame:button:1:action": "post",
+        "fc:frame:button:1:target": nextUrl,
+        "fc:frame:button:2": "Share Transfer",
+        "fc:frame:button:2:action": "post_redirect",
+        "fc:frame:button:2:target": shareUrl,
+        "fc:frame:button:3": "Open App",
+        "fc:frame:button:3:action": "link",
+        "fc:frame:button:3:target":
+          "https://farcaster-fpl-transfer-suggestor.vercel.app",
+      },
+    });
   } catch (err) {
     console.error("Frame generation failed:", err);
     return new Response(JSON.stringify({ error: err.message }), {
@@ -144,3 +140,4 @@ export default async function handler(req) {
     });
   }
 }
+
