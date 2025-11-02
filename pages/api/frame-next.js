@@ -139,20 +139,20 @@ export default async function handler(req) {
         Tap again for next suggestion →
     </div>
   </div>,
-  {
-    width: 1200,
-    height: 630,
-    contentType: "image/png",
-    fonts: [
       {
-        name: "Inter",
-        data: await fetch(
-          "https://github.com/google/fonts/raw/main/ofl/inter/Inter-Regular.ttf"
-        ).then((res) => res.arrayBuffer()),
-        style: "normal",
-        weight: 400,
-      },
-    ],
-  }
-);
+      width: 1200,
+      height: 630,
+      contentType: "image/png",
+      fonts: [
+        {
+          name: "Noto Sans",
+          data: await fetch(
+            "https://og-playground.vercel.app/static/NotoSans-Regular.ttf"
+          ).then((res) => res.arrayBuffer()),
+          weight: 400,
+          style: "normal",
+        },
+      ],
+    }
+  );
 }

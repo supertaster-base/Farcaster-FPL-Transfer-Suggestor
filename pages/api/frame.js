@@ -123,17 +123,15 @@ export default async function handler(req) {
     {
       width: 1200,
       height: 630,
-      // ✅ no headers with colons, just plain metadata
-            emoji: "🔄",
       contentType: "image/png",
       fonts: [
         {
-          name: "Inter",
+          name: "Noto Sans",
           data: await fetch(
-  "https://fonts.cdnfonts.com/s/14926/OpenSans-Regular.ttf"
-).then((res) => res.arrayBuffer()),
-          style: "normal",
+            "https://og-playground.vercel.app/static/NotoSans-Regular.ttf"
+          ).then((res) => res.arrayBuffer()),
           weight: 400,
+          style: "normal",
         },
       ],
     }
