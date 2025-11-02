@@ -43,21 +43,62 @@ export default async function handler(req, res) {
           textAlign: "center",
         }}
       >
-        <div style={{ fontSize: 54, color: "#a5b4fc", fontWeight: 700 }}>
+        {/* Title */}
+        <div
+          style={{
+            display: "flex", // ✅ added
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 54,
+            color: "#a5b4fc",
+            fontWeight: 700,
+            marginBottom: 40,
+          }}
+        >
           FPL Transfer Suggestion 🔄
         </div>
 
-        <div style={{ fontSize: 48, marginTop: 20 }}>
+        {/* Transfer line */}
+        <div
+          style={{
+            display: "flex", // ✅ added
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 48,
+            marginBottom: 20,
+          }}
+        >
           <span style={{ color: "#f87171" }}>{display.out}</span>
-          <span style={{ margin: "0 30px" }}>→</span>
+          <span style={{ margin: "0 30px", color: "#a5b4fc" }}>→</span>
           <span style={{ color: "#4ade80" }}>{display.in}</span>
         </div>
 
-        <div style={{ fontSize: 26, color: "#c7d2fe", marginTop: 10 }}>
+        {/* Meta info */}
+        <div
+          style={{
+            display: "flex", // ✅ added
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 26,
+            color: "#c7d2fe",
+            marginBottom: 20,
+          }}
+        >
           Position: {display.position} | Form: {display.form}
         </div>
 
-        <div style={{ fontSize: 22, color: "#818cf8", marginTop: 40 }}>
+        {/* Footer */}
+        <div
+          style={{
+            display: "flex", // ✅ added
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: 22,
+            color: "#818cf8",
+            opacity: 0.8,
+            marginTop: 40,
+          }}
+        >
           Tap again for next suggestion →
         </div>
       </div>
@@ -70,3 +111,4 @@ export default async function handler(req, res) {
   res.setHeader("Content-Type", "image/png");
   res.send(buffer);
 }
+
