@@ -18,19 +18,14 @@ export default async function handler(req) {
   try {
     const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`, {
       cache: "no-store",
-      next: { revalidate: 0 },
     });
     if (res.ok) {
       const data = await res.json();
-      if (data?.suggestion?.out && data?.suggestion?.in) {
-        display = data.suggestion;
-      }
+      if (data?.suggestion?.out && data?.suggestion?.in) display = data.suggestion;
     }
-  } catch (err) {
-    console.error("Error fetching suggestion:", err);
+  } catch (e) {
+    console.error("Error fetching suggestion:", e);
   }
-
-  const nextUrl = `${baseUrl}/api/frame-next?managerId=${managerId}`;
 
   return new ImageResponse(
     (
@@ -38,7 +33,7 @@ export default async function handler(req) {
         style={{
           width: "100%",
           height: "100%",
-          display: "flex", // ✅ top-level required
+          display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
@@ -50,37 +45,35 @@ export default async function handler(req) {
           overflow: "hidden",
         }}
       >
-        {/* glowing gradients */}
         <div
           style={{
             position: "absolute",
             width: "500px",
             height: "500px",
+            display: "flex",
             background:
               "radial-gradient(circle, rgba(129,140,248,0.35), rgba(0,0,0,0))",
             top: "-100px",
             right: "-150px",
             filter: "blur(80px)",
           }}
-        ></div>
-
+        />
         <div
           style={{
             position: "absolute",
             width: "400px",
             height: "400px",
+            display: "flex",
             background:
               "radial-gradient(circle, rgba(236,72,153,0.25), rgba(0,0,0,0))",
             bottom: "-120px",
             left: "-120px",
             filter: "blur(100px)",
           }}
-        ></div>
-
-        {/* title */}
+        />
         <div
           style={{
-            display: "flex", // ✅ required for multiple text nodes
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: 54,
@@ -93,12 +86,11 @@ export default async function handler(req) {
         >
           FPL Transfer Suggestion 🔄
         </div>
-
-        {/* suggestion card */}
         <div
           style={{
-            display: "flex", // ✅ required
+            display: "flex",
             flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
             background: "rgba(15, 23, 42, 0.75)",
             border: "1px solid rgba(129,140,248,0.3)",
@@ -110,7 +102,7 @@ export default async function handler(req) {
         >
           <div
             style={{
-              display: "flex", // ✅ added (this was the missing one!)
+              display: "flex",
               justifyContent: "center",
               alignItems: "center",
               fontSize: 48,
@@ -121,16 +113,21 @@ export default async function handler(req) {
             <span style={{ margin: "0 40px", color: "#a5b4fc" }}>→</span>
             <span style={{ color: "#4ade80" }}>{display.in}</span>
           </div>
-
-          <div style={{ fontSize: 26, color: "#c7d2fe" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 26,
+              color: "#c7d2fe",
+            }}
+          >
             Position: {display.position} | Form: {display.form}
           </div>
         </div>
-
-        {/* footer */}
         <div
           style={{
-            display: "flex", // ✅ required for OG
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             marginTop: 40,
@@ -143,10 +140,6 @@ export default async function handler(req) {
         </div>
       </div>
     ),
-    {
-      width: 1200,
-      height: 630,
-      contentType: "image/png",
-    }
+    { width: 1200, height: 630, contentType: "image/png" }
   );
 }
