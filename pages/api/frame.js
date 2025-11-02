@@ -26,6 +26,13 @@ export default async function handler(req, res) {
     console.error("fetch error", e);
   }
 
+  const nextUrl = `${baseUrl}/api/frame-next?managerId=${managerId}`;
+  const shareText = encodeURIComponent(
+    `FPL Suggestion — ${display.out} → ${display.in} via ${baseUrl}`
+  );
+  const shareUrl = `https://warpcast.com/~/compose?text=${shareText}`;
+
+  // --- generate image (same visual layout as before) ---
   const img = new ImageResponse(
     (
       <div
@@ -43,10 +50,9 @@ export default async function handler(req, res) {
           textAlign: "center",
         }}
       >
-        {/* Title */}
         <div
           style={{
-            display: "flex", // ✅ added
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: 54,
@@ -58,10 +64,9 @@ export default async function handler(req, res) {
           FPL Transfer Suggestion 🔄
         </div>
 
-        {/* Transfer line */}
         <div
           style={{
-            display: "flex", // ✅ added
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: 48,
@@ -73,10 +78,9 @@ export default async function handler(req, res) {
           <span style={{ color: "#4ade80" }}>{display.in}</span>
         </div>
 
-        {/* Meta info */}
         <div
           style={{
-            display: "flex", // ✅ added
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: 26,
@@ -87,10 +91,9 @@ export default async function handler(req, res) {
           Position: {display.position} | Form: {display.form}
         </div>
 
-        {/* Footer */}
         <div
           style={{
-            display: "flex", // ✅ added
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: 22,
@@ -106,9 +109,28 @@ export default async function handler(req, res) {
     { width: 1200, height: 630 }
   );
 
+  // --- convert and send with Farcaster headers ---
   const arrayBuffer = await img.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
+
   res.setHeader("Content-Type", "image/png");
+
+  // 🔸 Farcaster mini-app / frame metadata
+  res.setHeader("fc:frame", "vNext");
+  res.setHeader("fc:frame:image", `${baseUrl}/api/frame?managerId=${managerId}`);
+  res.setHeader("fc:frame:button:1", "Next Suggestion");
+  res.setHeader("fc:frame:button:1:action", "post");
+  res.setHeader("fc:frame:button:1:target", nextUrl);
+  res.setHeader("fc:frame:button:2", "Share Transfer");
+  res.setHeader("fc:frame:button:2:action", "post_redirect");
+  res.setHeader("fc:frame:button:2:target", shareUrl);
+  res.setHeader("fc:frame:button:3", "Open App");
+  res.setHeader("fc:frame:button:3:action", "link");
+  res.setHeader(
+    "fc:frame:button:3:target",
+    "https://farcaster-fpl-transfer-suggestor.vercel.app"
+  );
+
   res.send(buffer);
 }
 
