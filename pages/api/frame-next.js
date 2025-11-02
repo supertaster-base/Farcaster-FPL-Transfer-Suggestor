@@ -47,23 +47,23 @@ export default async function handler(req) {
   );
   const shareUrl = `https://warpcast.com/~/compose?text=${shareText}`;
 
-  return new ImageResponse(
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        background: "radial-gradient(circle at 30% 40%, #1e1b4b, #0f172a 70%)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "system-ui, sans-serif",
-        color: "white",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+return new ImageResponse(
+  <div
+    style={{
+      width: "100%",
+      height: "100%",
+      background: "radial-gradient(circle at 30% 40%, #1e1b4b, #0f172a 70%)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      fontFamily: "system-ui, sans-serif",
+      color: "white",
+      textAlign: "center",
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
       {/* glowing gradient rings */}
       <div
         style={{
