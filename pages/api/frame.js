@@ -124,15 +124,7 @@ export default async function handler(req) {
       width: 1200,
       height: 630,
       contentType: "image/png",
-      // ✅ Use a built-in generic font (no external request)
-      fonts: [
-        {
-          name: "Arial",
-          data: undefined, // no need to load, uses fallback
-          weight: 400,
-          style: "normal",
-        },
-      ],
+      // ✅ no custom fonts — use default system font to avoid buffer errors
     }
   );
 }
