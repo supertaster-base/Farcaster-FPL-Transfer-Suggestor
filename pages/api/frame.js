@@ -26,6 +26,11 @@ export default async function handler(req) {
     console.error("Error fetching suggestion:", err);
   }
 
+  // ✅ Load a real font buffer (required or OG renders blank)
+  const fontData = await fetch(
+    "https://github.com/google/fonts/raw/main/ofl/ibmplexsans/IBMPlexSans-Regular.ttf"
+  ).then((res) => res.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
@@ -38,12 +43,18 @@ export default async function handler(req) {
           alignItems: "center",
           backgroundColor: "#1e1b4b",
           color: "white",
-          fontSize: 42,
-          fontFamily: "sans-serif",
+          fontFamily: "IBM Plex Sans",
           textAlign: "center",
         }}
       >
-        <div style={{ fontSize: 54, fontWeight: 700, marginBottom: 40, color: "#a5b4fc" }}>
+        <div
+          style={{
+            fontSize: 54,
+            fontWeight: 700,
+            marginBottom: 40,
+            color: "#a5b4fc",
+          }}
+        >
           FPL Transfer Suggestion 🔄
         </div>
 
@@ -62,6 +73,17 @@ export default async function handler(req) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    {
+      width: 1200,
+      height: 630,
+      fonts: [
+        {
+          name: "IBM Plex Sans",
+          data: fontData,
+          weight: 400,
+          style: "normal",
+        },
+      ],
+    }
   );
 }
