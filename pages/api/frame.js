@@ -126,9 +126,9 @@ export default async function handler(req) {
       contentType: "image/png",
       fonts: [
         {
-          name: "Roboto",
+          name: "IBM Plex Sans",
           data: await fetch(
-            "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Regular.ttf"
+            "https://cdn.jsdelivr.net/gh/IBM/plex@1.9.0/IBM-Plex-Sans/fonts/complete/ttf/IBM-Plex-Sans-Regular.ttf"
           ).then((res) => res.arrayBuffer()),
           weight: 400,
           style: "normal",
