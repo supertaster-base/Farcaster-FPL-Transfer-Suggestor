@@ -4,6 +4,16 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export default async function handler(req) {
+  // --- 🧮 Simple analytics ping ---
+  try {
+    const ua = req.headers.get("user-agent") || "unknown";
+    const ip = req.headers.get("x-forwarded-for") || "0.0.0.0";
+    console.log(`[Frame View] ${new Date().toISOString()} | IP: ${ip} | UA: ${ua}`);
+  } catch (err) {
+    console.warn("Analytics log failed:", err);
+  }
+
+  // --- Existing logic below ---
   const { searchParams } = new URL(req.url);
   const managerId = searchParams.get("managerId") || "619981";
   const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
@@ -111,7 +121,7 @@ export default async function handler(req) {
     { width: 1200, height: 630 }
   );
 
-  // --- Instead of headers, respond as JSON frame metadata ---
+  // --- JSON frame metadata response ---
   return new Response(
     JSON.stringify({
       frame: "vNext",
@@ -119,11 +129,7 @@ export default async function handler(req) {
       buttons: [
         { label: "Next Suggestion", action: "post", target: nextUrl },
         { label: "Share Transfer", action: "post_redirect", target: shareUrl },
-        {
-          label: "Open App",
-          action: "link",
-          target: baseUrl,
-        },
+        { label: "Open App", action: "link", target: baseUrl },
       ],
     }),
     {
@@ -135,3 +141,4 @@ export default async function handler(req) {
     }
   );
 }
+
