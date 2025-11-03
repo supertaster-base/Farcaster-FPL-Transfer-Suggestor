@@ -1,0 +1,16 @@
+{
+  "name": "Farcaster FPL Transfer Suggestor",
+  "description": "Get live Fantasy Premier League transfer suggestions directly inside Farcaster. Smarter transfers, fewer knee-jerks ⚽️",
+  "icon": "https://farcaster-fpl-transfer-suggestor.vercel.app/icon.png",
+  "home_url": "https://farcaster-fpl-transfer-suggestor.vercel.app",
+  "frame_url": "https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame",
+  "cover_image": "https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
+  "developer": "supertaster.eth",
+  "supported_actions": ["post", "post_redirect", "link"],
+  "splashBackgroundColor": "#0F172A",
+  "splashForegroundColor": "#FFFFFF",
+  "theme_color": "#4F46E5",
+  "categories": ["sports", "fantasy", "football", "analytics"],
+  "privacy_policy_url": "https://farcaster-fpl-transfer-suggestor.vercel.app/privacy",
+  "terms_of_service_url": "https://farcaster-fpl-transfer-suggestor.vercel.app/terms"
+}
