@@ -5,7 +5,7 @@
   "home_url": "https://farcaster-fpl-transfer-suggestor.vercel.app",
   "frame_url": "https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame",
   "cover_image": "https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
-  "developer": "supertaster.base.eth",
+  "developer": "supertaster.eth",
   "supported_actions": ["post", "post_redirect", "link"],
   "splashBackgroundColor": "#0F172A",
   "splashForegroundColor": "#FFFFFF",
