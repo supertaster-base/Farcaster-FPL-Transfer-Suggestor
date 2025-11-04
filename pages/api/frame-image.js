@@ -1,6 +1,7 @@
 import { ImageResponse } from "@vercel/og";
 
-export const config = { runtime: "edge" };
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export default async function handler(req) {
   const { searchParams } = new URL(req.url);
