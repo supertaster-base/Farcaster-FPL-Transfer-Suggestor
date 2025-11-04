@@ -21,14 +21,11 @@ export default async function handler() {
     terms_of_service_url:
       "https://farcaster-fpl-transfer-suggestor.vercel.app/terms",
 
-    // ✅ Correct spelling & placement
-    account_association: {
-      header:
-        "eyJmaWQiOjI5NzA2NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDE3MmE3N0Q0MDljMGFBNDIyZUU4ODUxNDE4MTc2NTM3MmMxZWI4RjEifQ",
-      payload:
-        "eyJkb21haW4iOiJmYXJjYXN0ZXItZnBsLXRyYW5zZmVyLXN1Z2dlc3Rvci52ZXJjZWwuYXBwIn0",
-      signature:
-        "IHDaFrM+CxzKNmYCMzXjzx2MyoSZrRJiRxdnJaAUq/ptMnRzOi8MWrpuPIUaj9fTa+q1sVGS8A/sVjRNAiEm+Bs=",
+
+    "accountAssociation": {
+    "header": "eyJmaWQiOjI5NzA2NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDE3MmE3N0Q0MDljMGFBNDIyZUU4ODUxNDE4MTc2NTM3MmMxZWI4RjEifQ",
+    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZnBsLXRyYW5zZmVyLXN1Z2dlc3Rvci52ZXJjZWwuYXBwIn0",
+    "signature": "IHDaFrM+CxzKNmYCMzXjzx2MyoSZrRJiRxdnJaAUq/ptMnRzOi8MWrpuPIUaj9fTa+q1sVGS8A/sVjRNAiEm+Bs="
     },
   };
 
