@@ -15,13 +15,14 @@ export default function Home() {
     async function initFarcaster() {
       if (typeof window !== "undefined") {
         try {
-          // ✅ Load the new Mini App SDK dynamically
-          const miniapp = (await import("@farcaster/miniapp-sdk")).default;
+          // ✅ Import the new Mini App SDK
+          const { MiniApp } = await import("@farcaster/miniapp-sdk");
 
-          // ✅ Notify Farcaster that the Mini App is ready
-          await miniapp.ready();
+          // ✅ Initialize and mark ready
+          const miniapp = new MiniApp();
+          await miniapp.actions.ready();
 
-          console.log("✅ Farcaster Mini App ready (miniapp-sdk)");
+          console.log("✅ Farcaster Mini App ready (using @farcaster/miniapp-sdk)");
         } catch (err) {
           console.error("Farcaster SDK init error:", err);
         }
@@ -78,11 +79,11 @@ export default function Home() {
           }'
         />
 
-        {/* ✅ OG fallback tags */}
+        {/* ✅ Open Graph fallback tags */}
         <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
         <meta
           property="og:description"
-          content="Get smart FPL transfer suggestions directly in Farcaster."
+          content="Get smart FPL transfer suggestions directly inside Farcaster."
         />
         <meta
           property="og:image"
