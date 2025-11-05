@@ -1,10 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/.well-known/farcaster.json",
-      "destination": "/api/.well-known/farcaster.json"
+      "source": "/.well-known/fc-miniapp.json",
+      "destination": "/api/fc-miniapp"
     }
-  ],
+  ]
+},
   "headers": [
     {
       "source": "/api/(.*)",
