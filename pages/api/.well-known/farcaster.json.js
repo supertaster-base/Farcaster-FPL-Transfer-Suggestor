@@ -20,21 +20,23 @@ export default async function handler() {
       "https://farcaster-fpl-transfer-suggestor.vercel.app/privacy",
     terms_of_service_url:
       "https://farcaster-fpl-transfer-suggestor.vercel.app/terms",
-
-
-    "accountAssociation": {
-    "header": "eyJmaWQiOjI5NzA2NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDE3MmE3N0Q0MDljMGFBNDIyZUU4ODUxNDE4MTc2NTM3MmMxZWI4RjEifQ",
-    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZnBsLXRyYW5zZmVyLXN1Z2dlc3Rvci52ZXJjZWwuYXBwIn0",
-    "signature": "IHDaFrM+CxzKNmYCMzXjzx2MyoSZrRJiRxdnJaAUq/ptMnRzOi8MWrpuPIUaj9fTa+q1sVGS8A/sVjRNAiEm+Bs="
+    account_association: {
+      header:
+        "eyJmaWQiOjI5NzA2NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDE3MmE3N0Q0MDljMGFBNDIyZUU4ODUxNDE4MTc2NTM3MmMxZWI4RjEifQ",
+      payload:
+        "eyJkb21haW4iOiJmYXJjYXN0ZXItZnBsLXRyYW5zZmVyLXN1Z2dlc3Rvci52ZXJjZWwuYXBwIn0",
+      signature:
+        "IHDaFrM+CxzKNmYCMzXjzx2MyoSZrRJiRxdnJaAUq/ptMnRzOi8MWrpuPIUaj9fTa+q1sVGS8A/sVjRNAiEm+Bs=",
     },
   };
 
-return new Response(JSON.stringify(manifest, null, 2), {
-  headers: {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store, max-age=0",
-  },
-});
+  return new Response(JSON.stringify(manifest, null, 2), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
 }
+
 
 
