@@ -65,19 +65,9 @@ useEffect(() => {
 
         {/* ✅ Farcaster Mini App Embed Preview */}
         <meta
-          name="fc:miniapp"
-          content='{
-            "version":"1",
-            "imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
-            "button":{
-              "title":"Open Mini App",
-              "action":{
-                "type":"launch_frame",
-                "url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"
-              }
-            }
-          }'
-        />
+  name="fc:miniapp"
+  content='{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}'
+/>
 
         {/* ✅ Open Graph fallback tags */}
         <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
