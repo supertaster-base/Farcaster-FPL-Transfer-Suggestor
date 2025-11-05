@@ -32,21 +32,23 @@ export default async function handler(req) {
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: "1200px",
-          height: "630px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          background:
-            "radial-gradient(circle at 30% 40%, #312e81 0%, #0f172a 70%)",
-          color: "white",
-          fontFamily: "Arial, sans-serif",
-          textAlign: "center",
-        }}
-      >
+<div
+  style={{
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0f172a", // <-- solid base layer
+    backgroundImage: "radial-gradient(circle at 40% 30%, #312e81 0%, #0f172a 70%)",
+    color: "white",
+    fontFamily: "Arial, sans-serif",
+    textAlign: "center",
+    position: "relative",
+    overflow: "hidden",
+  }}
+>
         <div
           style={{
             fontSize: 54,
