@@ -4,5 +4,21 @@
       "source": "/.well-known/farcaster.json",
       "destination": "/api/.well-known/farcaster.json"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    }
   ]
 }
+

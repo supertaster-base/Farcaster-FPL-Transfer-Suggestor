@@ -43,24 +43,25 @@ export default async function handler(req) {
   );
   const shareUrl = `https://farcaster.com/~/compose?text=${shareText}`;
 
-  // --- Respond with JSON frame metadata ---
-  return new Response(
-    JSON.stringify({
-      frame: "vNext",
-      image: imageUrl,
-      buttons: [
-        { label: "Next Suggestion", action: "post", target: nextUrl },
-        { label: "Share Transfer", action: "post_redirect", target: shareUrl },
-        { label: "Open App", action: "link", target: baseUrl },
-      ],
-    }),
-    {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-    }
-  );
+  // --- ✅ Return clean JSON metadata ---
+  const responseBody = {
+    frame: "vNext",
+    image: imageUrl,
+    buttons: [
+      { label: "Next Suggestion", action: "post", target: nextUrl },
+      { label: "Share Transfer", action: "post_redirect", target: shareUrl },
+      { label: "Open App", action: "link", target: baseUrl },
+    ],
+  };
+
+  return new Response(JSON.stringify(responseBody, null, 2), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store, max-age=0, must-revalidate",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
+
 
