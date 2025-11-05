@@ -11,7 +11,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ Initialize Farcaster Mini App SDK (safe dynamic import)
+  // ✅ Initialize Farcaster Mini App SDK
   useEffect(() => {
     async function initFarcaster() {
       if (typeof window !== "undefined") {
@@ -28,7 +28,7 @@ export default function Home() {
     initFarcaster();
   }, []);
 
-  // ✅ Fetch FPL suggestions
+  // ✅ Fetch FPL suggestion
   async function runSuggestion() {
     setLoading(true);
     setError(null);
@@ -66,10 +66,7 @@ export default function Home() {
         />
 
         {/* ✅ OG fallback tags */}
-        <meta
-          property="og:title"
-          content="Farcaster FPL Transfer Suggestor"
-        />
+        <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
         <meta
           property="og:description"
           content="Get smart FPL transfer suggestions directly inside Farcaster."
@@ -80,20 +77,22 @@ export default function Home() {
         />
       </Head>
 
+      {/* ✅ Keep this outside <Head> */}
       <FarcasterHead />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
-        {/* ✅ Your main page content remains unchanged */}
         <main className="p-6 text-center">
           <h1 className="text-3xl font-bold text-indigo-400 mb-6">
             Farcaster FPL Transfer Suggestor
           </h1>
+
           <input
             value={managerId}
             onChange={(e) => setManagerId(e.target.value)}
             placeholder="Enter your FPL Manager ID"
             className="w-full max-w-sm p-2 rounded-lg text-gray-900"
           />
+
           <button
             onClick={runSuggestion}
             disabled={loading || !managerId}
@@ -102,9 +101,7 @@ export default function Home() {
             {loading ? "Loading..." : "Suggest Transfer"}
           </button>
 
-          {error && (
-            <div className="mt-4 text-red-400">⚠️ {error}</div>
-          )}
+          {error && <div className="mt-4 text-red-400">⚠️ {error}</div>}
 
           {suggestion && (
             <div className="mt-6 text-gray-200">
@@ -121,4 +118,5 @@ export default function Home() {
     </>
   );
 }
+
 
