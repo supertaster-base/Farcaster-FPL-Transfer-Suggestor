@@ -29,13 +29,12 @@ export default async function handler() {
     },
   };
 
-  return new Response(JSON.stringify(manifest, null, 2), {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, max-age=3600",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
+return new Response(JSON.stringify(manifest, null, 2), {
+  headers: {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store, max-age=0",
+  },
+});
 }
 
 
