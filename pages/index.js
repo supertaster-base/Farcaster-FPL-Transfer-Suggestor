@@ -15,15 +15,22 @@ useEffect(() => {
   async function initFarcaster() {
     if (typeof window !== "undefined") {
       try {
-        // ✅ Use the new Mini App SDK instead of the deprecated Frame SDK
-        const { sdk } = await import("@farcaster/miniapp-sdk");
-        await sdk.ready();
-        console.log("✅ Farcaster Mini App ready (new SDK)");
+        // ✅ Load the new Mini App SDK dynamically
+        const miniapp = (await import("@farcaster/miniapp-sdk")).default;
+
+        // ✅ Notify Farcaster that the Mini App is ready
+        await miniapp.ready();
+
+        console.log("✅ Farcaster Mini App ready (miniapp-sdk)");
       } catch (err) {
         console.error("Farcaster SDK init error:", err);
       }
     }
   }
+
+  initFarcaster();
+}, []);
+
     initFarcaster();
   }, []);
 
