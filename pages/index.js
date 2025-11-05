@@ -11,26 +11,26 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    async function initFarcaster() {
-      if (typeof window !== "undefined") {
-        try {
-          // ✅ Import the new Mini App SDK
-          const { MiniApp } = await import("@farcaster/miniapp-sdk");
+useEffect(() => {
+  async function initFarcaster() {
+    if (typeof window !== "undefined") {
+      try {
+        // ✅ Correct import for the latest @farcaster/miniapp-sdk
+        const miniappModule = await import("@farcaster/miniapp-sdk");
+        const miniapp = miniappModule.default || miniappModule;
 
-          // ✅ Initialize and mark ready
-          const miniapp = new MiniApp();
-          await miniapp.actions.ready();
+        // ✅ Tell Farcaster we're ready
+        await miniapp.actions.ready();
 
-          console.log("✅ Farcaster Mini App ready (using @farcaster/miniapp-sdk)");
-        } catch (err) {
-          console.error("Farcaster SDK init error:", err);
-        }
+        console.log("✅ Farcaster Mini App ready (stable default import)");
+      } catch (err) {
+        console.error("Farcaster SDK init error:", err);
       }
     }
+  }
 
-    initFarcaster();
-  }, []);
+  initFarcaster();
+}, []);
 
   async function runSuggestion() {
     setLoading(true);
