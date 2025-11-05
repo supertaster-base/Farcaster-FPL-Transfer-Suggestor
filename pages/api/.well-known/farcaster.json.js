@@ -20,7 +20,7 @@ export default async function handler() {
       "https://farcaster-fpl-transfer-suggestor.vercel.app/privacy",
     terms_of_service_url:
       "https://farcaster-fpl-transfer-suggestor.vercel.app/terms",
-    account_association: {
+    accountAssociation: {
       header:
         "eyJmaWQiOjI5NzA2NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDE3MmE3N0Q0MDljMGFBNDIyZUU4ODUxNDE4MTc2NTM3MmMxZWI4RjEifQ",
       payload:
