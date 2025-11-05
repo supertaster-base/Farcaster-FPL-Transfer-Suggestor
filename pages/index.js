@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FarcasterHead from "../components/FarcasterHead";
 import Head from "next/head";
+import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
@@ -57,6 +58,7 @@ useEffect(() => {
   return (
     <>
 <Head>
+<FarcasterMiniAppMeta />
   <title>Farcaster FPL Transfer Suggestor</title>
   <meta
     name="description"
