@@ -70,7 +70,6 @@ useEffect(() => {
     dangerouslySetInnerHTML={{
       __html: `
         const meta = document.createElement('meta');
-        meta.name = 'fc:miniapp';
         meta.content = '{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}';
         document.head.appendChild(meta);
       `,
