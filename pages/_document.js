@@ -4,22 +4,21 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* normal meta */}
         <meta
           name="description"
           content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
         />
 
-        {/* ✅ This prints a raw <meta> tag with real quotes */}
-        <script
+        {/* ✅ Inject literal <meta> as raw HTML in the head output */}
+        <meta
+          name="fc:miniapp"
+          content={`{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}`}
           dangerouslySetInnerHTML={{
-            __html: `
-              document.write('<meta name="fc:miniapp" content=\'{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}\'>');
-            `,
+            __html: `<meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}'>`,
           }}
         />
 
-        {/* open graph fallback */}
+        {/* OG tags */}
         <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
         <meta
           property="og:description"
