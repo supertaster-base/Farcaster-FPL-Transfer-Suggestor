@@ -11,25 +11,22 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-useEffect(() => {
-  async function initFarcaster() {
-    if (typeof window !== "undefined") {
-      try {
-        // ✅ Load the new Mini App SDK dynamically
-        const miniapp = (await import("@farcaster/miniapp-sdk")).default;
+  useEffect(() => {
+    async function initFarcaster() {
+      if (typeof window !== "undefined") {
+        try {
+          // ✅ Load the new Mini App SDK dynamically
+          const miniapp = (await import("@farcaster/miniapp-sdk")).default;
 
-        // ✅ Notify Farcaster that the Mini App is ready
-        await miniapp.ready();
+          // ✅ Notify Farcaster that the Mini App is ready
+          await miniapp.ready();
 
-        console.log("✅ Farcaster Mini App ready (miniapp-sdk)");
-      } catch (err) {
-        console.error("Farcaster SDK init error:", err);
+          console.log("✅ Farcaster Mini App ready (miniapp-sdk)");
+        } catch (err) {
+          console.error("Farcaster SDK init error:", err);
+        }
       }
     }
-  }
-
-  initFarcaster();
-}, []);
 
     initFarcaster();
   }, []);
