@@ -1,10 +1,6 @@
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
-  const miniAppMetaTag = `
-    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}'>
-  `;
-
   return (
     <Html lang="en">
       <Head>
@@ -13,16 +9,19 @@ export default function Document() {
           content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
         />
 
-        {/* ✅ Inject literal <meta> markup — not escaped */}
+        {/* ✅ Raw literal meta tag — not escaped by React or Next.js */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              document.head.insertAdjacentHTML("beforeend", \`${miniAppMetaTag}\`);
+              document.write('<meta name="fc:miniapp" content={"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}">');
             `,
           }}
-        />
+        ></script>
 
-        {/* Open Graph tags */}
         <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
         <meta
           property="og:description"
@@ -40,5 +39,4 @@ export default function Document() {
     </Html>
   );
 }
-
 
