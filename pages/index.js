@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import FarcasterHead from "../components/FarcasterHead";
 import Head from "next/head";
-import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
+import FarcasterHead from "../components/FarcasterHead";
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
@@ -12,40 +11,42 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-useEffect(() => {
-  async function initFarcaster() {
-    if (typeof window !== "undefined") {
-      try {
-        // ✅ Correct import for the latest @farcaster/miniapp-sdk
-        const miniappModule = await import("@farcaster/miniapp-sdk");
-        const miniapp = miniappModule.default || miniappModule;
-
-        // ✅ Tell Farcaster we're ready
-        await miniapp.actions.ready();
-
-        console.log("✅ Farcaster Mini App ready (stable default import)");
-      } catch (err) {
-        console.error("Farcaster SDK init error:", err);
+  // ✅ Initialize Farcaster Mini App SDK (safe dynamic import)
+  useEffect(() => {
+    async function initFarcaster() {
+      if (typeof window !== "undefined") {
+        try {
+          const miniappModule = await import("@farcaster/miniapp-sdk");
+          const miniapp = miniappModule.default || miniappModule;
+          await miniapp.actions.ready();
+          console.log("✅ Farcaster Mini App ready (miniapp-sdk)");
+        } catch (err) {
+          console.error("Farcaster SDK init error:", err);
+        }
       }
     }
-  }
+    initFarcaster();
+  }, []);
 
-  initFarcaster();
-}, []);
-
+  // ✅ Fetch FPL suggestions
   async function runSuggestion() {
     setLoading(true);
     setError(null);
     setSuggestion(null);
 
     try {
-      const res = await fetch(`/api/suggest?managerId=${encodeURIComponent(managerId)}`);
+      const res = await fetch(
+        `/api/suggest?managerId=${encodeURIComponent(managerId)}`
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
+
       setSuggestion(data.suggestion);
       setRecent((prev) => [data.suggestion, ...prev.slice(0, 4)]);
 
-      const teamRes = await fetch(`/api/team?managerId=${encodeURIComponent(managerId)}`);
+      const teamRes = await fetch(
+        `/api/team?managerId=${encodeURIComponent(managerId)}`
+      );
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
     } catch (err) {
@@ -57,41 +58,65 @@ useEffect(() => {
 
   return (
     <>
-<Head>
-<FarcasterMiniAppMeta />
-  <title>Farcaster FPL Transfer Suggestor</title>
-  <meta
-    name="description"
-    content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
-  />
+      <Head>
+        <title>Farcaster FPL Transfer Suggestor</title>
+        <meta
+          name="description"
+          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
+        />
 
-  {/* ✅ Farcaster Mini App Embed Preview — inserted via script to keep raw JSON */}
-  <script
-    dangerouslySetInnerHTML={{
-      __html: `
-        const meta = document.createElement('meta');
-        meta.content = '{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}';
-        document.head.appendChild(meta);
-      `,
-    }}
-  />
-
-  {/* ✅ OG fallback tags */}
-  <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
-  <meta
-    property="og:description"
-    content="Get smart FPL transfer suggestions directly inside Farcaster."
-  />
-  <meta
-    property="og:image"
-    content="https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png"
-  />
-</Head>
+        {/* ✅ OG fallback tags */}
+        <meta
+          property="og:title"
+          content="Farcaster FPL Transfer Suggestor"
+        />
+        <meta
+          property="og:description"
+          content="Get smart FPL transfer suggestions directly inside Farcaster."
+        />
+        <meta
+          property="og:image"
+          content="https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png"
+        />
+      </Head>
 
       <FarcasterHead />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
-        {/* rest of your page unchanged */}
+        {/* ✅ Your main page content remains unchanged */}
+        <main className="p-6 text-center">
+          <h1 className="text-3xl font-bold text-indigo-400 mb-6">
+            Farcaster FPL Transfer Suggestor
+          </h1>
+          <input
+            value={managerId}
+            onChange={(e) => setManagerId(e.target.value)}
+            placeholder="Enter your FPL Manager ID"
+            className="w-full max-w-sm p-2 rounded-lg text-gray-900"
+          />
+          <button
+            onClick={runSuggestion}
+            disabled={loading || !managerId}
+            className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg disabled:bg-gray-600"
+          >
+            {loading ? "Loading..." : "Suggest Transfer"}
+          </button>
+
+          {error && (
+            <div className="mt-4 text-red-400">⚠️ {error}</div>
+          )}
+
+          {suggestion && (
+            <div className="mt-6 text-gray-200">
+              <p>
+                <strong>Out:</strong> {suggestion.out}
+              </p>
+              <p>
+                <strong>In:</strong> {suggestion.in}
+              </p>
+            </div>
+          )}
+        </main>
       </div>
     </>
   );
