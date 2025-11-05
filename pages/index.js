@@ -63,16 +63,19 @@ useEffect(() => {
     content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
   />
 
-  {/* ✅ Farcaster Mini App Embed Preview — raw JSON to avoid &quot; escaping */}
-  <meta
-    name="fc:miniapp"
+  {/* ✅ Farcaster Mini App Embed Preview — inserted via script to keep raw JSON */}
+  <script
     dangerouslySetInnerHTML={{
-      __html:
-        '{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}',
+      __html: `
+        const meta = document.createElement('meta');
+        meta.name = 'fc:miniapp';
+        meta.content = '{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}';
+        document.head.appendChild(meta);
+      `,
     }}
   />
 
-  {/* ✅ Open Graph fallback tags */}
+  {/* ✅ OG fallback tags */}
   <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
   <meta
     property="og:description"
