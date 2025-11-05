@@ -1,8 +1,6 @@
-import Head from "next/head";
-
-export default function FarcasterHead() {
+export default function FarcasterHeadTags() {
   return (
-    <Head>
+    <>
       {/* --- Open Graph tags --- */}
       <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
       <meta
@@ -22,7 +20,10 @@ export default function FarcasterHead() {
         name="fc:frame:image"
         content="https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"
       />
-      <meta name="fc:frame:post_url" content="https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame-next" />
+      <meta
+        name="fc:frame:post_url"
+        content="https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame-next"
+      />
 
       {/* --- Buttons --- */}
       <meta name="fc:frame:button:1" content="Next Suggestion" />
@@ -45,6 +46,6 @@ export default function FarcasterHead() {
         name="fc:frame:button:3:target"
         content="https://farcaster-fpl-transfer-suggestor.vercel.app"
       />
-    </Head>
+    </>
   );
 }
