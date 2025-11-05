@@ -56,30 +56,33 @@ useEffect(() => {
 
   return (
     <>
-      <Head>
-        <title>Farcaster FPL Transfer Suggestor</title>
-        <meta
-          name="description"
-          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
-        />
+<Head>
+  <title>Farcaster FPL Transfer Suggestor</title>
+  <meta
+    name="description"
+    content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
+  />
 
-        {/* ✅ Farcaster Mini App Embed Preview */}
-        <meta
-  name="fc:miniapp"
-  content='{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}'
-/>
+  {/* ✅ Farcaster Mini App Embed Preview — raw JSON to avoid &quot; escaping */}
+  <meta
+    name="fc:miniapp"
+    dangerouslySetInnerHTML={{
+      __html:
+        '{"version":"1","imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png","button":{"title":"Open Mini App","action":{"type":"launch_frame","url":"https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"}}}',
+    }}
+  />
 
-        {/* ✅ Open Graph fallback tags */}
-        <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
-        <meta
-          property="og:description"
-          content="Get smart FPL transfer suggestions directly inside Farcaster."
-        />
-        <meta
-          property="og:image"
-          content="https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png"
-        />
-      </Head>
+  {/* ✅ Open Graph fallback tags */}
+  <meta property="og:title" content="Farcaster FPL Transfer Suggestor" />
+  <meta
+    property="og:description"
+    content="Get smart FPL transfer suggestions directly inside Farcaster."
+  />
+  <meta
+    property="og:image"
+    content="https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png"
+  />
+</Head>
 
       <FarcasterHead />
 
