@@ -11,18 +11,19 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    async function initFarcaster() {
-      if (typeof window !== "undefined") {
-        try {
-          const { sdk } = await import("@farcaster/frame-sdk");
-          sdk.actions.ready();
-          console.log("✅ Farcaster Mini App ready");
-        } catch (err) {
-          console.error("Farcaster SDK init error:", err);
-        }
+useEffect(() => {
+  async function initFarcaster() {
+    if (typeof window !== "undefined") {
+      try {
+        // ✅ Use the new Mini App SDK instead of the deprecated Frame SDK
+        const { sdk } = await import("@farcaster/miniapp-sdk");
+        await sdk.ready();
+        console.log("✅ Farcaster Mini App ready (new SDK)");
+      } catch (err) {
+        console.error("Farcaster SDK init error:", err);
       }
     }
+  }
     initFarcaster();
   }, []);
 
