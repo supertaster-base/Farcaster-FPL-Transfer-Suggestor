@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const managerId = searchParams.get("managerId") || "619981";
-
   const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
 
   let display = {
@@ -44,7 +43,7 @@ export default async function handler(req) {
           backgroundImage:
             "radial-gradient(circle at 40% 30%, #312e81 0%, #0f172a 70%)",
           color: "white",
-          fontFamily: "'IBM Plex Sans', Arial, sans-serif",
+          fontFamily: "'Inter', Arial, sans-serif",
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -78,12 +77,7 @@ export default async function handler(req) {
           <span style={{ color: "#4ade80", fontWeight: 700 }}>{display.in}</span>
         </div>
 
-        <div
-          style={{
-            fontSize: 26,
-            color: "#c7d2fe",
-          }}
-        >
+        <div style={{ fontSize: 26, color: "#c7d2fe" }}>
           Position: {display.position} | Form: {display.form}
         </div>
       </div>
@@ -93,9 +87,9 @@ export default async function handler(req) {
       height: 630,
       fonts: [
         {
-          name: "IBM Plex Sans",
+          name: "Inter",
           data: await fetch(
-            "https://cdn.jsdelivr.net/gh/IBM/plex@1.9.0/IBM-Plex-Sans/fonts/complete/ttf/IBM-Plex-Sans-Regular.ttf"
+            "https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmME.ttf"
           ).then((res) => res.arrayBuffer()),
           weight: 400,
           style: "normal",
@@ -103,5 +97,4 @@ export default async function handler(req) {
       ],
     }
   );
-} 
-
+}
