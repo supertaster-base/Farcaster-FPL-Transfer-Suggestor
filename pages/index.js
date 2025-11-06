@@ -1,24 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-
-// ✅ ADD THIS — NEW MINIAPP META COMPONENT
 import FarcasterEmbedMeta from "../components/FarcasterEmbedMeta";
-
-<div
-  id="sdk-log"
-  style={{
-    padding: "12px",
-    margin: "12px",
-    background: "#0ea5e9",
-    borderRadius: "8px",
-    fontSize: "14px",
-    color: "#000",
-    fontWeight: "600",
-  }}
->
-  SDK Status: <span id="sdk-status">initializing...</span>
-</div>
-
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
@@ -27,49 +9,37 @@ export default function Home() {
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-// ✅ FARCASTER READY — CLIENT-ONLY
-useEffect(() => {
-  if (typeof window === "undefined") return;
+  // ✅ FARCASTER READY — CLIENT-ONLY
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  let cancelled = false;
+    let cancelled = false;
 
-  async function initFarcaster() {
-    try {
-      const statusEl = document.getElementById("sdk-status");
-      if (statusEl) statusEl.innerText = "importing…";
+    async function initFarcaster() {
+      try {
+        const sdkModule = await import("@farcaster/miniapp-sdk");
+        const sdk = sdkModule.default || sdkModule;
 
-      const sdkModule = await import("@farcaster/miniapp-sdk");
-      const sdk = sdkModule.default || sdkModule;
+        if (!sdk?.actions?.ready) {
+          console.warn("⚠ miniapp.actions.ready not found");
+          return;
+        }
 
-      if (!sdk?.actions?.ready) {
-        if (statusEl) statusEl.innerText = "ready() missing";
-        console.warn("⚠ miniapp.actions.ready not found");
-        return;
+        if (cancelled) return;
+
+        await sdk.actions.ready();
+        console.log("✅ Farcaster Mini App ready");
+      } catch (err) {
+        console.error("❌ Farcaster SDK init failed:", err);
       }
-
-      if (cancelled) return;
-
-      if (statusEl) statusEl.innerText = "calling ready()…";
-
-      await sdk.actions.ready();
-
-      if (statusEl) statusEl.innerText = "✅ ready() called";
-      console.log("✅ Farcaster Mini App ready");
-    } catch (err) {
-      const statusEl = document.getElementById("sdk-status");
-      if (statusEl) statusEl.innerText = "❌ error";
-      console.error("❌ Farcaster SDK init failed:", err);
     }
-  }
 
-  initFarcaster();
-  return () => {
-    cancelled = true;
-  };
-}, []);
-
+    initFarcaster();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function runSuggestion() {
     setLoading(true);
@@ -77,13 +47,18 @@ useEffect(() => {
     setSuggestion(null);
 
     try {
-      const res = await fetch(`/api/suggest?managerId=${encodeURIComponent(managerId)}`);
+      const res = await fetch(
+        `/api/suggest?managerId=${encodeURIComponent(managerId)}`
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
+
       setSuggestion(data.suggestion);
       setRecent((prev) => [data.suggestion, ...prev.slice(0, 4)]);
 
-      const teamRes = await fetch(`/api/team?managerId=${encodeURIComponent(managerId)}`);
+      const teamRes = await fetch(
+        `/api/team?managerId=${encodeURIComponent(managerId)}`
+      );
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
     } catch (err) {
@@ -103,44 +78,13 @@ useEffect(() => {
         />
       </Head>
 
-      {/* ✅ INSERT HERE */}
+      {/* ✅ Required meta for embed */}
       <FarcasterEmbedMeta />
 
-{/* --- SMOKE TEST BANNER --- */}
-<div
-  id="smoke-test"
-  style={{
-    padding: '16px',
-    margin: '16px',
-    borderRadius: '12px',
-    background: '#22C55E',
-    color: '#000',
-    fontWeight: 700,
-    textAlign: 'center',
-  }}
->
-  ✅ Mini App UI rendered
-</div>
+      <div className="min-h-screen bg-gray-950 text-gray-100 p-4">
+        <h1 className="text-xl font-bold mb-4 text-center">
+          FPL Transfer Suggestor
+        </h1>
 
-<div
-  id="sdk-log"
-  style={{
-    padding: "12px",
-    margin: "12px",
-    background: "#0ea5e9",
-    borderRadius: "8px",
-    fontSize: "14px",
-    color: "#000",
-    fontWeight: "600",
-  }}
->
-  SDK Status: <span id="sdk-status">initializing...</span>
-</div>
-
-
-      <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
-        {/* your page */}
-      </div>
-    </>
-  );
-}
+        <label className="block mb-2 font-semibold">
+          Enter Manager ID
