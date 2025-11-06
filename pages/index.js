@@ -4,6 +4,22 @@ import Head from "next/head";
 // ✅ ADD THIS — NEW MINIAPP META COMPONENT
 import FarcasterEmbedMeta from "../components/FarcasterEmbedMeta";
 
+<div
+  id="sdk-log"
+  style={{
+    padding: "12px",
+    margin: "12px",
+    background: "#0ea5e9",
+    borderRadius: "8px",
+    fontSize: "14px",
+    color: "#000",
+    fontWeight: "600",
+  }}
+>
+  SDK Status: <span id="sdk-status">initializing...</span>
+</div>
+
+
 export default function Home() {
   const [managerId, setManagerId] = useState("");
   const [suggestion, setSuggestion] = useState(null);
@@ -13,36 +29,47 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ FARCASTER READY — CLIENT-ONLY
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+// ✅ FARCASTER READY — CLIENT-ONLY
+useEffect(() => {
+  if (typeof window === "undefined") return;
 
-    let cancelled = false;
+  let cancelled = false;
 
-    async function initFarcaster() {
-      try {
-        const sdkModule = await import("@farcaster/miniapp-sdk");
-        const sdk = sdkModule.default || sdkModule;
+  async function initFarcaster() {
+    try {
+      const statusEl = document.getElementById("sdk-status");
+      if (statusEl) statusEl.innerText = "importing…";
 
-        if (!sdk?.actions?.ready) {
-          console.warn("⚠ miniapp.actions.ready not found");
-          return;
-        }
+      const sdkModule = await import("@farcaster/miniapp-sdk");
+      const sdk = sdkModule.default || sdkModule;
 
-        if (cancelled) return;
-
-        await sdk.actions.ready();
-        console.log("✅ Farcaster Mini App ready");
-      } catch (err) {
-        console.error("❌ Farcaster SDK init failed:", err);
+      if (!sdk?.actions?.ready) {
+        if (statusEl) statusEl.innerText = "ready() missing";
+        console.warn("⚠ miniapp.actions.ready not found");
+        return;
       }
-    }
 
-    initFarcaster();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      if (cancelled) return;
+
+      if (statusEl) statusEl.innerText = "calling ready()…";
+
+      await sdk.actions.ready();
+
+      if (statusEl) statusEl.innerText = "✅ ready() called";
+      console.log("✅ Farcaster Mini App ready");
+    } catch (err) {
+      const statusEl = document.getElementById("sdk-status");
+      if (statusEl) statusEl.innerText = "❌ error";
+      console.error("❌ Farcaster SDK init failed:", err);
+    }
+  }
+
+  initFarcaster();
+  return () => {
+    cancelled = true;
+  };
+}, []);
+
 
   async function runSuggestion() {
     setLoading(true);
@@ -94,6 +121,22 @@ export default function Home() {
 >
   ✅ Mini App UI rendered
 </div>
+
+<div
+  id="sdk-log"
+  style={{
+    padding: "12px",
+    margin: "12px",
+    background: "#0ea5e9",
+    borderRadius: "8px",
+    fontSize: "14px",
+    color: "#000",
+    fontWeight: "600",
+  }}
+>
+  SDK Status: <span id="sdk-status">initializing...</span>
+</div>
+
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
         {/* your page */}
