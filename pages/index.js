@@ -65,38 +65,35 @@ export default function Home() {
   async function shareSuggestion() {
     if (!suggestion) return;
 
-    const baseUrl =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://farcaster-fpl-transfer-suggestor.vercel.app";
-
-    const text = `I just improved my team for next gameweek! You should check out transfer suggestions for your team too.
+    const text = `I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
-${baseUrl}`;
+See your recommended transfer:
+https://farcaster-fpl-transfer-suggestor.vercel.app
+`;
 
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
       const sdk = sdkModule.default || sdkModule;
 
       await sdk.actions.openUrl(
-        `https://farcaster.xyz/~/compose?text=${encodeURIComponent(text)}`
+        `https://farcaster.xyz/compose?text=${encodeURIComponent(text)}`
       );
     } catch (err) {
       console.error("❌ Share failed:", err);
     }
   }
 
-// ✅ Group players by position
-function groupTeam(players) {
-  const groups = { GK: [], DEF: [], MID: [], FWD: [] };
-  players.forEach((p) => {
-    if (groups[p.position]) groups[p.position].push(p);
-  });
-  return groups;
-}
+  // ✅ Group players by position
+  function groupTeam(players) {
+    const groups = { GK: [], DEF: [], MID: [], FWD: [] };
+    players.forEach((p) => {
+      if (groups[p.position]) groups[p.position].push(p);
+    });
+    return groups;
+  }
 
   return (
     <>
@@ -110,14 +107,17 @@ function groupTeam(players) {
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-6">
+      <div className="min-h-screen bg-gray-950 text-gray-100 p-4 mx-auto w-full max-w-md space-y-6">
+
+        {/* ✅ Header */}
         <header className="text-center space-y-1">
-          <h1 className="text-2xl font-bold">FPL Transfer Suggestor</h1>
+          <h1 className="text-xl font-bold">FPL Transfer Suggestor</h1>
           <p className="text-gray-300 text-sm">
             Get a smart transfer based on your manager ID
           </p>
         </header>
 
+        {/* ✅ Input */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-300">
             Enter Manager ID
@@ -140,10 +140,12 @@ function groupTeam(players) {
           </button>
         </div>
 
+        {/* ✅ Error */}
         {error && (
           <p className="text-red-400 font-semibold text-sm">{error}</p>
         )}
 
+        {/* ✅ Suggested Transfer */}
         {suggestion && (
           <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
             <div className="flex items-center justify-between">
@@ -174,33 +176,36 @@ function groupTeam(players) {
           </div>
         )}
 
-{team?.length > 0 && (() => {
-  const grouped = groupTeam(team);
+        {/* ✅ Full Squad */}
+        {team?.length > 0 && (() => {
+          const grouped = groupTeam(team);
 
-  return (
-    <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
-      <h2 className="font-bold text-lg text-gray-200">Full Squad</h2>
+          return (
+            <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
+              <h2 className="font-bold text-lg text-gray-200">
+                Full Squad
+              </h2>
 
-      {Object.entries(grouped).map(([pos, players]) =>
-        players.length > 0 ? (
-          <div key={pos} className="space-y-1">
-            <h3 className="text-purple-300 font-semibold text-sm">
-              {pos}
-            </h3>
+              {Object.entries(grouped).map(([pos, players]) =>
+                players.length > 0 ? (
+                  <div key={pos} className="space-y-1">
+                    <h3 className="text-purple-300 font-semibold text-sm">
+                      {pos}
+                    </h3>
 
-            {players.map((p, i) => (
-              <p key={i} className="text-sm text-gray-300 ml-2">
-                {p.name}
-              </p>
-            ))}
-          </div>
-        ) : null
-      )}
-    </div>
-  );
-})()}
+                    {players.map((p, i) => (
+                      <p key={i} className="text-sm text-gray-300 ml-2">
+                        {p.name}
+                      </p>
+                    ))}
+                  </div>
+                ) : null
+              )}
+            </div>
+          );
+        })()}
 
-
+        {/* ✅ Footer */}
         <footer className="text-center text-gray-500 text-xs pt-6">
           Built for Farcaster Mini Apps • v1
         </footer>
@@ -208,3 +213,4 @@ function groupTeam(players) {
     </>
   );
 }
+
