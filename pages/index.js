@@ -74,8 +74,6 @@ export default function Home() {
         />
       </Head>
 
-      <FarcasterMiniAppMeta />
-
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
         {/* your page */}
       </div>
