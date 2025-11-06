@@ -5,17 +5,18 @@ export default function FarcasterEmbedMeta() {
     <Head>
       <meta
         name="fc:miniapp"
-        content='{
-          "version":"1",
-          "imageUrl":"https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
-          "button":{
-            "title":"Open Mini App",
-            "action":{
-              "type":"launch_miniapp",
-              "url":"https://farcaster-fpl-transfer-suggestor.vercel.app"
-            }
-          }
-        }'
+        content={JSON.stringify({
+          version: "1",
+          imageUrl: "https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
+          button: {
+            title: "Open Mini App",
+            action: {
+              type: "launch_miniapp",
+              name: "fpl-transfer-suggestor",   // ✅ REQUIRED
+              url: "https://farcaster-fpl-transfer-suggestor.vercel.app",
+            },
+          },
+        })}
       />
     </Head>
   );
