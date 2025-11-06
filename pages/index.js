@@ -94,16 +94,18 @@ export default function Home() {
 async function shareSuggestion() {
   if (!suggestion) return;
 
-  const shareUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
+  const shareUrl = `https://farcaster-fpl-transfer-suggestor.vercel.app`;
 
-  const text = `I just improved my FPL team for next GW! ✅
+  const text = `
+I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
 Check out your suggested transfer:
 
-${shareUrl}`;
+${shareUrl}
+  `.trim(); // ✅ removes trailing newline/space so preview loads instantly
 
   try {
     const sdkModule = await import("@farcaster/miniapp-sdk");
