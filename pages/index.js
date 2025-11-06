@@ -26,14 +26,10 @@ export default function Home() {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
 
-        if (!sdk?.actions?.ready) {
-          console.warn("⚠ miniapp.actions.ready not found");
-          return;
-        }
-
+        if (!sdk?.actions?.ready) return;
         if (cancelled) return;
+
         await sdk.actions.ready();
-        console.log("✅ Farcaster Mini App ready");
       } catch (err) {
         console.error("❌ Farcaster SDK init failed:", err);
       }
@@ -47,7 +43,6 @@ export default function Home() {
 
   async function runSuggestion() {
     if (managerId) {
-      // ✅ Save Manager ID
       localStorage.setItem("fpl_manager_id", managerId);
     }
 
@@ -64,17 +59,15 @@ export default function Home() {
 
       if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
 
-      // ✅ If no valid suggestion returned
       if (!data.suggestion || !data.suggestion.in || !data.suggestion.out) {
         setSuggestion({
           none: true,
           message:
-            "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
+            "✅ Your squad looks solid — no obvious transfers needed this GW!",
         });
         return;
       }
 
-      // ✅ Valid suggestion
       setSuggestion(data.suggestion);
 
       const teamRes = await fetch(
@@ -101,7 +94,8 @@ ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.
 
 Check out your suggested transfer:
 
-${shareUrl}`;
+${shareUrl}
+`;
 
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
@@ -115,7 +109,6 @@ ${shareUrl}`;
     }
   }
 
-  // ✅ Group players by position
   function groupTeam(players) {
     const groups = { GK: [], DEF: [], MID: [], FWD: [] };
     players.forEach((p) => {
@@ -130,14 +123,13 @@ ${shareUrl}`;
         <title>Farcaster FPL Transfer Suggestor</title>
         <meta
           name="description"
-          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
+          content="Get smart Fantasy Premier League transfer suggestions inside Farcaster."
         />
       </Head>
 
       <FarcasterEmbedMeta />
 
-      {/* ✅ Prevent clipping + balanced padding */}
-      <div className="min-h-screen bg-gray-950 text-gray-100 px-4 py-6 w-full max-w-sm mx-auto flex flex-col space-y-6">
+      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-6 w-full mx-auto flex flex-col space-y-6">
 
         {/* HEADER */}
         <header className="text-center">
@@ -149,9 +141,9 @@ ${shareUrl}`;
           </p>
         </header>
 
-        {/* INPUT */}
-        <div className="w-full bg-gray-900 rounded-lg border border-gray-800 px-4 py-4 space-y-3 shadow-md">
-          <label className="text-xs font-medium text-gray-400 tracking-wide">
+        {/* INPUT BLOCK */}
+        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
+          <label className="text-xs font-medium text-gray-400">
             Manager ID
           </label>
 
@@ -175,10 +167,10 @@ ${shareUrl}`;
               : "Get Suggestion"}
           </button>
 
-          <p className="text-[11px] text-gray-400 text-center mt-1 leading-snug">
+          <p className="text-[11px] text-gray-500 text-center mt-1 leading-tight">
             You can find your Manager ID in your FPL profile
             <br />
-            <span className="text-gray-500">(Gameweek History URL)</span>
+            (Gameweek History URL)
           </p>
         </div>
 
@@ -187,11 +179,11 @@ ${shareUrl}`;
           <p className="text-red-400 font-medium text-xs">{error}</p>
         )}
 
-        {/* SUGGESTION */}
+        {/* SUGGESTED TRANSFER */}
         {suggestion && (
-          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
+          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-base text-green-300 tracking-wide">
+              <h2 className="font-semibold text-base text-green-300">
                 Suggested Transfer
               </h2>
               <span className="text-[10px] text-gray-400 px-2 py-0.5 rounded bg-gray-700">
@@ -230,8 +222,10 @@ ${shareUrl}`;
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
-            <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
-              <h2 className="font-semibold text-base text-gray-200">Full Squad</h2>
+            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
+              <h2 className="font-semibold text-base text-gray-200">
+                Full Squad
+              </h2>
 
               {Object.entries(grouped).map(([pos, players]) =>
                 players?.length > 0 ? (
@@ -240,7 +234,10 @@ ${shareUrl}`;
                       {pos}
                     </h3>
                     {players.map((p, i) => (
-                      <p key={i} className="text-xs text-gray-300 ml-2 leading-tight">
+                      <p
+                        key={i}
+                        className="text-xs text-gray-300 ml-2 leading-tight"
+                      >
                         {p.name}
                       </p>
                     ))}
@@ -251,12 +248,11 @@ ${shareUrl}`;
           );
         })()}
 
-        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-4">
+        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
           Built for Farcaster Mini Apps • v1
         </footer>
       </div>
     </>
   );
 }
-
 
