@@ -91,29 +91,42 @@ export default function Home() {
     }
   }
 
-  async function shareSuggestion() {
-    if (!suggestion) return;
+async function shareSuggestion() {
+  if (!suggestion) return;
 
-    const text = `I just improved my FPL team for next GW! ✅
+  const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
+
+  // Build card image URL
+  const cardUrl = `${baseUrl}/api/card?out=${encodeURIComponent(
+    suggestion.out
+  )}&in=${encodeURIComponent(suggestion.in)}&position=${encodeURIComponent(
+    suggestion.position
+  )}&form=${encodeURIComponent(suggestion.form)}`;
+
+  // Text body
+  const text = `I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
 See your recommended transfer:
-https://farcaster-fpl-transfer-suggestor.vercel.app
+${baseUrl}
+
+${cardUrl}
 `;
 
-    try {
-      const sdkModule = await import("@farcaster/miniapp-sdk");
-      const sdk = sdkModule.default || sdkModule;
+  try {
+    const sdkModule = await import("@farcaster/miniapp-sdk");
+    const sdk = sdkModule.default || sdkModule;
 
-      await sdk.actions.openUrl(
-        `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
-      );
-    } catch (err) {
-      console.error("❌ Share failed:", err);
-    }
+    // ✅ Use /~/compose so the image URL embeds automatically
+    await sdk.actions.openUrl(
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+    );
+  } catch (err) {
+    console.error("❌ Share failed:", err);
   }
+}
 
   // ✅ Group players by position
   function groupTeam(players) {
