@@ -1,6 +1,6 @@
 // pages/_app.js
 
-import "@/styles/globals.css";   // ✅ Load Tailwind + global styles
+import "../styles/globals.css";   // ✅ FIXED PATH
 
 export const config = {
   runtime: "nodejs",
