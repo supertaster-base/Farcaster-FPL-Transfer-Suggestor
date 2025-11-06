@@ -1,6 +1,6 @@
 import { ImageResponse } from "@vercel/og";
 
-export const config = { runtime: "edge" };
+export const runtime = "nodejs"; // optional
 
 // Fetch a suggestion from your existing API
 async function getSuggestion(managerId) {

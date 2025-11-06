@@ -1,4 +1,4 @@
-export const config = { runtime: "edge" };
+export const runtime = "nodejs"; // optional
 
 export default async function handler() {
   const manifest = {

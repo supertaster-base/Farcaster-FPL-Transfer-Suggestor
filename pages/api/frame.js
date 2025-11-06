@@ -1,47 +1,48 @@
-import { ImageResponse } from "@vercel/og";
+// pages/api/frame.js
+export default async function handler(req, res) {
+  // --- Safe header access in Pages API ---
+  const ua = req.headers["user-agent"] || "";
+  const accept = req.headers["accept"] || "";
+  const host = req.headers.host || "localhost:3000";
+  const proto = host.includes("localhost") ? "http" : "https";
+  const baseUrl = `${proto}://${host}`;
 
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
+  // --- Parse managerId from query ---
+  const managerId = (req.query?.managerId && String(req.query.managerId)) || "619981";
 
-export default async function handler(req) {
-  // --- Analytics ping ---
+  // --- Analytics ping (won’t throw) ---
   try {
-    const ua = req.headers.get("user-agent") || "unknown";
-    const ip = req.headers.get("x-forwarded-for") || "0.0.0.0";
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      req.socket?.remoteAddress ||
+      "0.0.0.0";
     console.log(`[Frame View] ${new Date().toISOString()} | IP: ${ip} | UA: ${ua}`);
-  } catch (err) {
-    console.warn("Analytics log failed:", err);
-  }
+  } catch (_) {}
 
-  const { searchParams } = new URL(req.url);
-  const managerId = searchParams.get("managerId") || "619981";
-  const baseUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
-
-  // --- Suggestion fetch ---
+  // --- Fetch suggestion (don’t break response if it fails) ---
   let display = {
     out: "Your team looks great 💪",
     in: "Save your transfer 😉",
     position: "—",
     form: "—",
   };
-
   try {
-    const res = await fetch(`${baseUrl}/api/suggest?managerId=${managerId}`, {
+    const r = await fetch(`${baseUrl}/api/suggest?managerId=${encodeURIComponent(managerId)}`, {
       cache: "no-store",
     });
-    if (res.ok) {
-      const data = await res.json();
+    if (r.ok) {
+      const data = await r.json();
       if (data?.suggestion?.out && data?.suggestion?.in) display = data.suggestion;
     }
-  } catch (err) {
-    console.error("Suggestion fetch failed:", err);
+  } catch (e) {
+    console.warn("Suggestion fetch failed:", e?.message || e);
   }
 
-  const imageUrl = `${baseUrl}/api/frame-image?managerId=${managerId}`;
-  const nextUrl = `${baseUrl}/api/frame-next?managerId=${managerId}`;
-  const shareText = encodeURIComponent(
-    `FPL Suggestion — ${display.out} → ${display.in} via ${baseUrl}`
-  );
+  // --- Frame payload (vNext) ---
+  // If you removed /api/frame-image and /api/frame-next, point buttons elsewhere.
+  const imageUrl = `${baseUrl}/cover.png`; // fallback image
+  const nextUrl = `${baseUrl}/api/frame`;  // simple "post" that re-hits this endpoint
+  const shareText = encodeURIComponent(`FPL Suggestion — ${display.out} → ${display.in} via ${baseUrl}`);
   const shareUrl = `https://farcaster.com/~/compose?text=${shareText}`;
 
   const jsonResponse = {
@@ -54,62 +55,45 @@ export default async function handler(req) {
     ],
   };
 
-  // --- Detect if validator expects HTML ---
-  const ua = req.headers.get("user-agent") || "";
-  const accept = req.headers.get("accept") || "";
-
-  const isHtmlCheck =
-    ua.includes("Farcaster") ||
-    ua.includes("curl") ||
-    accept.includes("text/html");
-
+  // --- If a validator/browser is requesting HTML, send meta tags version
+  const isHtmlCheck = accept.includes("text/html") || ua.includes("Farcaster") || ua.includes("curl");
   if (isHtmlCheck) {
-    // --- ✅ Return HTML meta tags version (for preview & validation)
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta property="og:title" content="FPL Transfer Suggestion 🔄" />
-          <meta property="og:description" content="${display.out} → ${display.in}" />
-          <meta property="og:image" content="${imageUrl}" />
-          <meta property="fc:frame" content="vNext" />
-          <meta property="fc:frame:image" content="${imageUrl}" />
-          <meta property="fc:frame:button:1" content="Next Suggestion" />
-          <meta property="fc:frame:button:1:action" content="post" />
-          <meta property="fc:frame:button:1:target" content="${nextUrl}" />
-          <meta property="fc:frame:button:2" content="Share Transfer" />
-          <meta property="fc:frame:button:2:action" content="post_redirect" />
-          <meta property="fc:frame:button:2:target" content="${shareUrl}" />
-          <meta property="fc:frame:button:3" content="Open App" />
-          <meta property="fc:frame:button:3:action" content="link" />
-          <meta property="fc:frame:button:3:target" content="${baseUrl}" />
-        </head>
-        <body style="background-color:#0f172a;color:white;font-family:sans-serif;text-align:center;padding-top:20%">
-          <h1>FPL Transfer Suggestion</h1>
-          <p>${display.out} → ${display.in}</p>
-          <p>Frame metadata active ✅</p>
-        </body>
-      </html>
-    `;
-    return new Response(html, {
-      status: 200,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "no-store, max-age=0, must-revalidate",
-      },
-    });
+    const html = `<!doctype html>
+<html>
+  <head>
+    <meta property="og:title" content="FPL Transfer Suggestion 🔄" />
+    <meta property="og:description" content="${display.out} → ${display.in}" />
+    <meta property="og:image" content="${imageUrl}" />
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="${imageUrl}" />
+    <meta property="fc:frame:button:1" content="Next Suggestion" />
+    <meta property="fc:frame:button:1:action" content="post" />
+    <meta property="fc:frame:button:1:target" content="${nextUrl}" />
+    <meta property="fc:frame:button:2" content="Share Transfer" />
+    <meta property="fc:frame:button:2:action" content="post_redirect" />
+    <meta property="fc:frame:button:2:target" content="${shareUrl}" />
+    <meta property="fc:frame:button:3" content="Open App" />
+    <meta property="fc:frame:button:3:action" content="link" />
+    <meta property="fc:frame:button:3:target" content="${baseUrl}" />
+  </head>
+  <body style="background:#0f172a;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;display:grid;place-items:center;min-height:100vh">
+    <main style="text-align:center">
+      <h1>FPL Transfer Suggestion</h1>
+      <p>${display.out} → ${display.in}</p>
+      <p>Frame metadata active ✅</p>
+    </main>
+  </body>
+</html>`;
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "no-store, max-age=0, must-revalidate");
+    res.status(200).send(html);
+    return;
   }
 
-  // --- ✅ Normal JSON response for frame clients ---
-  return new Response(JSON.stringify(jsonResponse, null, 2), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store, max-age=0, must-revalidate",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
+  // --- Default: JSON for frame clients
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store, max-age=0, must-revalidate");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.status(200).json(jsonResponse);
 }
-
-
 

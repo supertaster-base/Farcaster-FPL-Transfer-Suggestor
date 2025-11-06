@@ -1,3 +1,6 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
@@ -11,7 +14,6 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ Mini App SDK
   useEffect(() => {
     async function initFarcaster() {
       if (typeof window !== "undefined") {
@@ -28,7 +30,6 @@ export default function Home() {
     initFarcaster();
   }, []);
 
-  // ✅ Suggestion
   async function runSuggestion() {
     setLoading(true);
     setError(null);
@@ -61,8 +62,7 @@ export default function Home() {
         />
       </Head>
 
-      {/* ✅ Centralized meta — SAFE */}
-      <FarcasterMiniAppMeta />
+      <FarcasterMiniAppMeta />   {/* ✅ restored */}
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
         {/* your page */}
@@ -70,3 +70,4 @@ export default function Home() {
     </>
   );
 }
+

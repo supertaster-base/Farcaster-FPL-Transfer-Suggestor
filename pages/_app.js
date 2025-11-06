@@ -1,5 +1,8 @@
-import '../styles/globals.css';
+export const config = {
+  runtime: 'nodejs',
+};
 
-export default function App({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
 }
+
