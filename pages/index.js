@@ -69,112 +69,99 @@ export default function Home() {
   }
 
   return (
-    <>
-      <Head>
-        <title>Farcaster FPL Transfer Suggestor</title>
-        <meta
-          name="description"
-          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
-        />
-      </Head>
+<>
+  <Head>
+    <title>Farcaster FPL Transfer Suggestor</title>
+    <meta
+      name="description"
+      content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
+    />
+  </Head>
 
-      {/* ✅ Required META for Mini App embed */}
-      <FarcasterEmbedMeta />
+  <FarcasterEmbedMeta />
 
-      <div className="min-h-screen w-full bg-[#0F172A] text-slate-100 p-4">
-        <div className="max-w-lg mx-auto space-y-6">
+  <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-6">
+    <header className="text-center space-y-1">
+      <h1 className="text-2xl font-bold">FPL Transfer Suggestor</h1>
+      <p className="text-gray-300 text-sm">
+        Get a smart transfer based on your manager ID
+      </p>
+    </header>
 
-          {/* Title */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-tight">
-              FPL Transfer Suggestor
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Get a smart transfer based on your manager ID
-            </p>
-          </div>
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-300">
+        Enter Manager ID
+      </label>
 
-          {/* Card: Input */}
-          <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-slate-800">
-            <label className="block mb-2 font-semibold">
-              Enter Manager ID
-            </label>
+      <input
+        type="text"
+        value={managerId}
+        onChange={(e) => setManagerId(e.target.value)}
+        placeholder="e.g. 619981"
+        className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:border-purple-500 outline-none"
+      />
 
-            <input
-              type="text"
-              value={managerId}
-              onChange={(e) => setManagerId(e.target.value)}
-              placeholder="e.g. 619981"
-              className="w-full p-3 rounded-lg bg-slate-900/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
-            />
+      <button
+        onClick={runSuggestion}
+        disabled={loading}
+        className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-md disabled:opacity-50"
+      >
+        {loading ? "Loading…" : "Get Suggestion"}
+      </button>
+    </div>
 
-            <button
-              onClick={runSuggestion}
-              disabled={loading || !managerId}
-              className="mt-3 w-full py-3 rounded-xl bg-[#4F46E5] hover:opacity-95 font-bold disabled:opacity-40 transition"
-            >
-              {loading ? "Fetching suggestion…" : "Get Suggestion"}
-            </button>
+    {error && (
+      <p className="text-red-400 font-semibold text-sm">
+        {error}
+      </p>
+    )}
 
-            {error && (
-              <p className="mt-2 text-sm text-red-400">{error}</p>
-            )}
-          </div>
+    {suggestion && (
+      <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-lg text-green-300">
+            Suggested Transfer
+          </h2>
+          <span className="text-xs text-gray-400 px-2 py-1 rounded bg-gray-700">
+            Live
+          </span>
+        </div>
 
-          {/* Card: Result */}
-          {suggestion && (
-            <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-[#10B981]/40">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-lg font-bold text-[#10B981]">
-                  Suggested Transfer
-                </h2>
-                <span className="text-xs text-slate-400">Live</span>
-              </div>
-
-              <div className="text-xl">
-                <span className="font-semibold">{suggestion.out}</span>
-                <span className="mx-2 text-slate-400">→</span>
-                <span className="font-semibold text-[#10B981]">
-                  {suggestion.in}
-                </span>
-              </div>
-
-              <p className="text-sm text-slate-400 mt-2">
-                Position: {suggestion.position ?? "—"} • Form:{" "}
-                {suggestion.form ?? "—"}
-              </p>
-            </div>
-          )}
-
-          {/* Card: Recent */}
-          {recent.length > 0 && (
-            <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-slate-800">
-              <h3 className="font-bold mb-2">Recent Suggestions</h3>
-              <div className="divide-y divide-slate-800">
-                {recent.map((r, i) => (
-                  <div key={i} className="py-2 text-sm">
-                    <span className="font-medium">{r.out}</span>
-                    <span className="mx-2 text-slate-500">→</span>
-                    <span className="font-medium text-[#10B981]">
-                      {r.in}
-                    </span>
-                    <span className="ml-2 text-slate-500">
-                      ({r.position ?? "—"} • {r.form ?? "—"})
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <p className="text-center text-xs text-slate-500">
-            Built for Farcaster Mini Apps • v1
+        <div>
+          <p className="text-md font-semibold">
+            <span className="text-gray-200">{suggestion.out}</span>
+            {" → "}
+            <span className="text-green-400">{suggestion.in}</span>
           </p>
         </div>
+
+        <p className="text-sm text-gray-300">
+          Position: {suggestion.position} • Form: {suggestion.form}
+        </p>
       </div>
-    </>
-  );
-}
+    )}
+
+    {recent?.length > 0 && (
+      <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-2">
+        <h2 className="font-bold text-lg text-gray-200">
+          Recent Suggestions
+        </h2>
+
+        {recent.map((p, i) => (
+          <p key={i} className="text-sm text-gray-300">
+            {p.out} → <span className="text-green-400">{p.in}</span>
+            {" ("}
+            {p.position} • {p.form}
+            {")"}
+          </p>
+        ))}
+      </div>
+    )}
+
+    <footer className="text-center text-gray-500 text-xs pt-6">
+      Built for Farcaster Mini Apps • v1
+    </footer>
+  </div>
+</>
 
 
