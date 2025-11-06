@@ -9,14 +9,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ NEW – track if app already showed a suggestion
-  const [hasSuggested, setHasSuggested] = useState(false);
-
-  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill Manager ID
+  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill manager ID
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Prefill Manager ID from localStorage
+    // ✅ Prefill previously stored manager ID
     const stored = localStorage.getItem("fpl_manager_id");
     if (stored) {
       setManagerId(stored);
@@ -29,9 +26,12 @@ export default function Home() {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
 
-        if (!sdk?.actions?.ready) return;
-        if (cancelled) return;
+        if (!sdk?.actions?.ready) {
+          console.warn("⚠ miniapp.actions.ready not found");
+          return;
+        }
 
+        if (cancelled) return;
         await sdk.actions.ready();
         console.log("✅ Farcaster Mini App ready");
       } catch (err) {
@@ -69,21 +69,19 @@ export default function Home() {
         setSuggestion({
           none: true,
           message:
-            "✅ Your squad looks strong — no obvious transfers needed this week! Saving a transfer might be the best play.",
+            "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
         });
-      } else {
-        // ✅ Valid suggestion
-        setSuggestion(data.suggestion);
+        return;
       }
+
+      // ✅ Valid suggestion
+      setSuggestion(data.suggestion);
 
       const teamRes = await fetch(
         `/api/team?managerId=${encodeURIComponent(managerId)}`
       );
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
-
-      // ✅ Set flag so button text updates
-      setHasSuggested(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -91,33 +89,31 @@ export default function Home() {
     }
   }
 
-async function shareSuggestion() {
-  if (!suggestion) return;
+  async function shareSuggestion() {
+    if (!suggestion) return;
 
-  const shareUrl = `https://farcaster-fpl-transfer-suggestor.vercel.app`;
+    const shareUrl = "https://farcaster-fpl-transfer-suggestor.vercel.app";
 
-  const text = `
-I just improved my FPL team for next GW! ✅
+    const text = `I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
 Check out your suggested transfer:
 
-${shareUrl}
-  `.trim(); // ✅ removes trailing newline/space so preview loads instantly
+${shareUrl}`;
 
-  try {
-    const sdkModule = await import("@farcaster/miniapp-sdk");
-    const sdk = sdkModule.default || sdkModule;
+    try {
+      const sdkModule = await import("@farcaster/miniapp-sdk");
+      const sdk = sdkModule.default || sdkModule;
 
-    await sdk.actions.openUrl(
-      `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
-    );
-  } catch (err) {
-    console.error("❌ Share failed:", err);
+      await sdk.actions.openUrl(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+      );
+    } catch (err) {
+      console.error("❌ Share failed:", err);
+    }
   }
-}
 
   // ✅ Group players by position
   function groupTeam(players) {
@@ -134,13 +130,14 @@ ${shareUrl}
         <title>Farcaster FPL Transfer Suggestor</title>
         <meta
           name="description"
-          content="Get live Fantasy Premier League transfer suggestions inside Farcaster."
+          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
         />
       </Head>
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-6 w-full max-w-sm mx-auto flex flex-col space-y-6">
+      {/* ✅ Prevent clipping + balanced padding */}
+      <div className="min-h-screen bg-gray-950 text-gray-100 px-4 py-6 w-full max-w-sm mx-auto flex flex-col space-y-6">
 
         {/* HEADER */}
         <header className="text-center">
@@ -153,7 +150,7 @@ ${shareUrl}
         </header>
 
         {/* INPUT */}
-        <div className="w-full bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-3 shadow-lg">
+        <div className="w-full bg-gray-900 rounded-lg border border-gray-800 px-4 py-4 space-y-3 shadow-md">
           <label className="text-xs font-medium text-gray-400 tracking-wide">
             Manager ID
           </label>
@@ -161,12 +158,7 @@ ${shareUrl}
           <input
             type="text"
             value={managerId}
-            onChange={(e) => {
-              setManagerId(e.target.value);
-
-              // ✅ Reset button label when ID changes
-              setHasSuggested(false);
-            }}
+            onChange={(e) => setManagerId(e.target.value)}
             placeholder="e.g. 619981"
             className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
           />
@@ -178,13 +170,15 @@ ${shareUrl}
           >
             {loading
               ? "Loading…"
-              : hasSuggested
+              : suggestion
               ? "Get Another Suggestion"
               : "Get Suggestion"}
           </button>
 
-          <p className="text-[11px] text-gray-500 text-center mt-1">
-            You can find your Manager ID in your FPL profile URL.
+          <p className="text-[11px] text-gray-400 text-center mt-1 leading-snug">
+            You can find your Manager ID in your FPL profile
+            <br />
+            <span className="text-gray-500">(Gameweek History URL)</span>
           </p>
         </div>
 
