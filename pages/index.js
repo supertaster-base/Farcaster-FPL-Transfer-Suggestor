@@ -9,9 +9,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ FARCASTER READY — CLIENT-ONLY
+  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill manager ID
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // ✅ Prefill previously stored manager ID
+    const stored = localStorage.getItem("fpl_manager_id");
+    if (stored) {
+      setManagerId(stored);
+    }
 
     let cancelled = false;
 
@@ -40,6 +46,11 @@ export default function Home() {
   }, []);
 
   async function runSuggestion() {
+    if (managerId) {
+      // ✅ Save Manager ID
+      localStorage.setItem("fpl_manager_id", managerId);
+    }
+
     setLoading(true);
     setError(null);
     setSuggestion(null);
@@ -123,7 +134,6 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
 
       <FarcasterEmbedMeta />
 
-      {/* MAIN WRAPPER */}
       <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-6 w-full max-w-sm mx-auto flex flex-col space-y-6">
 
         {/* HEADER */}
@@ -136,7 +146,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           </p>
         </header>
 
-        {/* INPUT CARD */}
+        {/* INPUT */}
         <div className="w-full bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-3 shadow-lg">
           <label className="text-xs font-medium text-gray-400 tracking-wide">
             Manager ID
@@ -159,7 +169,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           </button>
 
           <p className="text-[11px] text-gray-500 text-center mt-1">
-            You can find your Manager ID in the FPL website URL.
+            You can find your Manager ID in your FPL profile URL.
           </p>
         </div>
 
@@ -168,7 +178,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           <p className="text-red-400 font-medium text-xs">{error}</p>
         )}
 
-        {/* SUGGESTED TRANSFER */}
+        {/* SUGGESTION */}
         {suggestion && (
           <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
             <div className="flex items-center justify-between">
@@ -207,7 +217,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           </div>
         )}
 
-        {/* TEAM VIEW */}
+        {/* TEAM */}
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
@@ -221,10 +231,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
                       {pos}
                     </h3>
                     {players.map((p, i) => (
-                      <p
-                        key={i}
-                        className="text-xs text-gray-300 ml-2 leading-tight"
-                      >
+                      <p key={i} className="text-xs text-gray-300 ml-2 leading-tight">
                         {p.name}
                       </p>
                     ))}
@@ -235,7 +242,6 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           );
         })()}
 
-        {/* FOOTER */}
         <footer className="text-center text-gray-500 text-[11px] pt-2 pb-4">
           Built for Farcaster Mini Apps • v1
         </footer>
