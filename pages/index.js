@@ -79,7 +79,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
     const sdk = sdkModule.default || sdkModule;
 
     await sdk.actions.openUrl(
-      `https://farcaster.com/~/compose?text=${encodeURIComponent(text)}`
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
     );
   } catch (err) {
     console.error("❌ Share failed:", err);
