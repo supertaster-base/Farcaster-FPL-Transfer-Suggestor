@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
+
+// ✅ ADD THIS — NEW MINIAPP META COMPONENT
+import FarcasterEmbedMeta from "../components/FarcasterEmbedMeta";
 
 export default function Home() {
   const [managerId, setManagerId] = useState("");
@@ -74,10 +76,12 @@ export default function Home() {
         />
       </Head>
 
+      {/* ✅ INSERT HERE */}
+      <FarcasterEmbedMeta />
+
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
         {/* your page */}
       </div>
     </>
   );
 }
-
