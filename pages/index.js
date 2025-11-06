@@ -1,4 +1,5 @@
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
@@ -13,51 +14,51 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ FARCASTER READY
-useEffect(() => {
-  let cancelled = false;
+  // ✅ FARCASTER `ready()` FIX — CLIENT-ONLY
+  useEffect(() => {
+    let cancelled = false;
 
-  async function initFarcaster() {
-    if (typeof window === "undefined") return;
+    async function initFarcaster() {
+      if (typeof window === "undefined") return;
 
-    try {
-      const mod = await import("@farcaster/miniapp-sdk");
-      const miniapp = mod.default || mod;
+      try {
+        const mod = await import("@farcaster/miniapp-sdk");
+        const miniapp = mod.default || mod;
 
-      function callReady() {
-        if (cancelled) return;
-        if (!miniapp?.actions?.ready) {
-          console.warn("⚠ miniapp.actions.ready missing");
-          return;
+        function callReady() {
+          if (cancelled) return;
+
+          if (!miniapp?.actions?.ready) {
+            console.warn("⚠ miniapp.actions.ready missing");
+            return;
+          }
+
+          miniapp.actions
+            .ready()
+            .then(() => console.log("✅ Farcaster Mini App ready"))
+            .catch((err) =>
+              console.error("❌ ready() failed:", err)
+            );
         }
-        miniapp.actions
-          .ready()
-          .then(() => console.log("✅ Farcaster Mini App ready"))
-          .catch((err) => console.error("❌ ready() failed:", err));
+
+        // First attempt
+        callReady();
+
+        // Fallbacks — helps delayed shell load
+        window.addEventListener("focus", callReady);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") callReady();
+        });
+      } catch (err) {
+        console.error("❌ Farcaster SDK import failed:", err);
       }
-
-      // ✅ initial call
-      callReady();
-
-      // ✅ fallback if shell loads slower
-      window.addEventListener("focus", callReady);
-      window.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") callReady();
-      });
-    } catch (err) {
-      console.error("❌ Farcaster SDK import failed:", err);
     }
-  }
-
-  initFarcaster();
-
-  return () => {
-    cancelled = true;
-  };
-}, []);
-
 
     initFarcaster();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function runSuggestion() {
@@ -66,22 +67,16 @@ useEffect(() => {
     setSuggestion(null);
 
     try {
-      const res = await fetch(
-        `/api/suggest?managerId=${encodeURIComponent(managerId)}`
-      );
+      const res = await fetch(`/api/suggest?managerId=${encodeURIComponent(managerId)}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Suggestion failed");
-
+      if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
       setSuggestion(data.suggestion);
       setRecent((prev) => [data.suggestion, ...prev.slice(0, 4)]);
 
-      const teamRes = await fetch(
-        `/api/team?managerId=${encodeURIComponent(managerId)}`
-      );
+      const teamRes = await fetch(`/api/team?managerId=${encodeURIComponent(managerId)}`);
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
     } catch (err) {
-      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -98,18 +93,11 @@ useEffect(() => {
         />
       </Head>
 
-      {/* ✅ Required Farcaster Mini App meta */}
       <FarcasterMiniAppMeta />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
-        {/* TODO: your UI */}
+        {/* your page */}
       </div>
     </>
   );
 }
-
-// ✅ This prevents Next from prerendering and avoids SSR `useEffect` break
-export async function getServerSideProps() {
-  return { props: {} };
-}
-
