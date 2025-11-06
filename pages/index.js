@@ -40,50 +40,49 @@ export default function Home() {
     };
   }, []);
 
-async function runSuggestion() {
-  setLoading(true);
-  setError(null);
-  setSuggestion(null);
-  setTeam([]);
+  async function runSuggestion() {
+    setLoading(true);
+    setError(null);
+    setSuggestion(null);
+    setTeam([]);
 
-  try {
-    const res = await fetch(
-      `/api/suggest?managerId=${encodeURIComponent(managerId)}`
-    );
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `/api/suggest?managerId=${encodeURIComponent(managerId)}`
+      );
+      const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
+      if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
 
-    // ✅ If no suggestion returned
-    if (!data.suggestion || !data.suggestion.in || !data.suggestion.out) {
-      setSuggestion({
-        none: true,
-        message:
-          "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
-      });
-      return;
+      // ✅ If no valid suggestion returned
+      if (!data.suggestion || !data.suggestion.in || !data.suggestion.out) {
+        setSuggestion({
+          none: true,
+          message:
+            "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
+        });
+        return;
+      }
+
+      // ✅ Valid suggestion
+      setSuggestion(data.suggestion);
+
+      const teamRes = await fetch(
+        `/api/team?managerId=${encodeURIComponent(managerId)}`
+      );
+      const teamData = await teamRes.json();
+      setTeam(teamData.players || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    // ✅ Valid suggestion
-    setSuggestion(data.suggestion);
-
-    const teamRes = await fetch(
-      `/api/team?managerId=${encodeURIComponent(managerId)}`
-    );
-    const teamData = await teamRes.json();
-    setTeam(teamData.players || []);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
   }
-}
 
+  async function shareSuggestion() {
+    if (!suggestion) return;
 
-async function shareSuggestion() {
-  if (!suggestion) return;
-
-  const text = `I just improved my FPL team for next GW! ✅
+    const text = `I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
@@ -92,17 +91,17 @@ See your recommended transfer:
 https://farcaster-fpl-transfer-suggestor.vercel.app
 `;
 
-  try {
-    const sdkModule = await import("@farcaster/miniapp-sdk");
-    const sdk = sdkModule.default || sdkModule;
+    try {
+      const sdkModule = await import("@farcaster/miniapp-sdk");
+      const sdk = sdkModule.default || sdkModule;
 
-    await sdk.actions.openUrl(
-      `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
-    );
-  } catch (err) {
-    console.error("❌ Share failed:", err);
+      await sdk.actions.openUrl(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+      );
+    } catch (err) {
+      console.error("❌ Share failed:", err);
+    }
   }
-}
 
   // ✅ Group players by position
   function groupTeam(players) {
@@ -125,113 +124,119 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
 
       <FarcasterEmbedMeta />
 
-<div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-4 w-full max-w-sm mx-auto space-y-5">
+      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-4 w-full max-w-sm mx-auto space-y-5">
 
-  {/* HEADER */}
-  <header className="text-center space-y-2">
-    <h1 className="text-2xl font-bold tracking-tight">
-      FPL Transfer Suggestor
-    </h1>
-    <p className="text-gray-400 text-sm leading-snug">
-      Get a smart transfer based on your manager ID
-    </p>
-  </header>
-
-  {/* INPUT */}
-  <div className="space-y-2">
-    <label className="text-xs font-medium text-gray-400 tracking-wide">
-      Manager ID
-    </label>
-
-    <input
-      type="text"
-      value={managerId}
-      onChange={(e) => setManagerId(e.target.value)}
-      placeholder="ex: 619981"
-      className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
-    />
-
-    <button
-      onClick={runSuggestion}
-      disabled={loading}
-      className="w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-md disabled:opacity-50"
-    >
-      {loading ? "Loading…" : "Get Suggestion"}
-    </button>
-  </div>
-
-  {/* ERROR */}
-  {error && (
-    <p className="text-red-400 font-medium text-xs">{error}</p>
-  )}
-
-  {/* SUGGESTED TRANSFER */}
-  {suggestion && (
-    <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-base text-green-300 tracking-wide">
-          Suggested Transfer
-        </h2>
-        <span className="text-[10px] text-gray-400 px-2 py-0.5 rounded bg-gray-700">
-          Live
-        </span>
-      </div>
-
-      {suggestion.in ? (
-        <>
-          <p className="text-sm font-semibold leading-snug">
-            <span className="text-gray-200">{suggestion.out}</span>
-            {" → "}
-            <span className="text-green-400">{suggestion.in}</span>
+        {/* HEADER */}
+        <header className="text-center space-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">
+            FPL Transfer Suggestor
+          </h1>
+          <p className="text-gray-400 text-sm leading-snug">
+            Get a smart transfer based on your manager ID
           </p>
+        </header>
 
-          <p className="text-xs text-gray-300">
-            Position: {suggestion.position} • Form: {suggestion.form}
-          </p>
+        {/* INPUT */}
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-gray-400 tracking-wide">
+            Manager ID
+          </label>
+
+          <input
+            type="text"
+            value={managerId}
+            onChange={(e) => setManagerId(e.target.value)}
+            placeholder="ex: 619981"
+            className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
+          />
 
           <button
-            onClick={shareSuggestion}
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md text-sm"
+            onClick={runSuggestion}
+            disabled={loading}
+            className="w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-md disabled:opacity-50"
           >
-            Share Transfer
+            {loading ? "Loading…" : "Get Suggestion"}
           </button>
-        </>
-      ) : (
-        <p className="text-sm text-gray-300 italic">
-          ✅ Your squad is already strong! Best to save your transfer this GW.
-        </p>
-      )}
-    </div>
-  )}
+        </div>
 
-  {/* TEAM */}
-  {team?.length > 0 && (() => {
-    const grouped = groupTeam(team);
-    return (
-      <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
-        <h2 className="font-semibold text-base text-gray-200">Full Squad</h2>
-
-        {Object.entries(grouped).map(([pos, players]) =>
-          players?.length > 0 ? (
-            <div key={pos} className="space-y-1">
-              <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
-                {pos}
-              </h3>
-
-              {players.map((p, i) => (
-                <p key={i} className="text-xs text-gray-300 ml-2 leading-tight">
-                  {p.name}
-                </p>
-              ))}
-            </div>
-          ) : null
+        {/* ERROR */}
+        {error && (
+          <p className="text-red-400 font-medium text-xs">{error}</p>
         )}
-      </div>
-    );
-  })()}
 
-  {/* FOOTER */}
-  <footer className="text-center text-gray-500 text-[10px] pt-2 pb-4">
-    Built for Farcaster Mini Apps • v1
-  </footer>
-</div>
+        {/* SUGGESTED TRANSFER */}
+        {suggestion && (
+          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-base text-green-300 tracking-wide">
+                Suggested Transfer
+              </h2>
+              <span className="text-[10px] text-gray-400 px-2 py-0.5 rounded bg-gray-700">
+                Live
+              </span>
+            </div>
+
+            {suggestion.in ? (
+              <>
+                <p className="text-sm font-semibold leading-snug">
+                  <span className="text-gray-200">{suggestion.out}</span>
+                  {" → "}
+                  <span className="text-green-400">{suggestion.in}</span>
+                </p>
+
+                <p className="text-xs text-gray-300">
+                  Position: {suggestion.position} • Form: {suggestion.form}
+                </p>
+
+                <button
+                  onClick={shareSuggestion}
+                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md text-sm"
+                >
+                  Share Transfer
+                </button>
+              </>
+            ) : (
+              <p className="text-sm text-gray-300 italic">
+                ✅ Your squad is already strong! Best to save your transfer this GW.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* TEAM */}
+        {team?.length > 0 && (() => {
+          const grouped = groupTeam(team);
+          return (
+            <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
+              <h2 className="font-semibold text-base text-gray-200">Full Squad</h2>
+
+              {Object.entries(grouped).map(([pos, players]) =>
+                players?.length > 0 ? (
+                  <div key={pos} className="space-y-1">
+                    <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
+                      {pos}
+                    </h3>
+
+                    {players.map((p, i) => (
+                      <p
+                        key={i}
+                        className="text-xs text-gray-300 ml-2 leading-tight"
+                      >
+                        {p.name}
+                      </p>
+                    ))}
+                  </div>
+                ) : null
+              )}
+            </div>
+          );
+        })()}
+
+        {/* FOOTER */}
+        <footer className="text-center text-gray-500 text-[10px] pt-2 pb-4">
+          Built for Farcaster Mini Apps • v1
+        </footer>
+      </div>
+    </>
+  );
+}
