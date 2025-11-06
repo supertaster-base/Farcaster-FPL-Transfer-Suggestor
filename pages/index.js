@@ -40,27 +40,45 @@ export default function Home() {
     };
   }, []);
 
-  async function runSuggestion() {
-    setLoading(true);
-    setError(null);
-    setSuggestion(null);
-    setTeam([]);
+async function runSuggestion() {
+  setLoading(true);
+  setError(null);
+  setSuggestion(null);
+  setTeam([]);
 
-    try {
-      const res = await fetch(`/api/suggest?managerId=${encodeURIComponent(managerId)}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
-      setSuggestion(data.suggestion);
+  try {
+    const res = await fetch(
+      `/api/suggest?managerId=${encodeURIComponent(managerId)}`
+    );
+    const data = await res.json();
 
-      const teamRes = await fetch(`/api/team?managerId=${encodeURIComponent(managerId)}`);
-      const teamData = await teamRes.json();
-      setTeam(teamData.players || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
+
+    // ✅ If no suggestion returned
+    if (!data.suggestion || !data.suggestion.in || !data.suggestion.out) {
+      setSuggestion({
+        none: true,
+        message:
+          "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
+      });
+      return;
     }
+
+    // ✅ Valid suggestion
+    setSuggestion(data.suggestion);
+
+    const teamRes = await fetch(
+      `/api/team?managerId=${encodeURIComponent(managerId)}`
+    );
+    const teamData = await teamRes.json();
+    setTeam(teamData.players || []);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
   }
+}
+
 
 async function shareSuggestion() {
   if (!suggestion) return;
@@ -147,34 +165,47 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
 
         {/* ✅ Suggested Transfer */}
         {suggestion && (
-          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="font-bold text-lg text-green-300">
-                Suggested Transfer
-              </h2>
-              <span className="text-xs text-gray-400 px-2 py-1 rounded bg-gray-700">
-                Live
-              </span>
-            </div>
+  <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
+    {suggestion.none ? (
+      <>
+        <h2 className="font-bold text-lg text-green-300">
+          No Transfer Needed
+        </h2>
+        <p className="text-sm text-gray-300">
+          {suggestion.message}
+        </p>
+      </>
+    ) : (
+      <>
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-lg text-green-300">
+            Suggested Transfer
+          </h2>
+          <span className="text-xs text-gray-400 px-2 py-1 rounded bg-gray-700">
+            Live
+          </span>
+        </div>
 
-            <p className="text-md font-semibold">
-              <span className="text-gray-200">{suggestion.out}</span>
-              {" → "}
-              <span className="text-green-400">{suggestion.in}</span>
-            </p>
+        <p className="text-md font-semibold">
+          <span className="text-gray-200">{suggestion.out}</span>
+          {" → "}
+          <span className="text-green-400">{suggestion.in}</span>
+        </p>
 
-            <p className="text-sm text-gray-300">
-              Position: {suggestion.position} • Form: {suggestion.form}
-            </p>
+        <p className="text-sm text-gray-300">
+          Position: {suggestion.position} • Form: {suggestion.form}
+        </p>
 
-            <button
-              onClick={shareSuggestion}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md"
-            >
-              Share Transfer
-            </button>
-          </div>
-        )}
+        <button
+          onClick={shareSuggestion}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md"
+        >
+          Share Transfer
+        </button>
+      </>
+    )}
+  </div>
+)}
 
         {/* ✅ Full Squad */}
         {team?.length > 0 && (() => {
