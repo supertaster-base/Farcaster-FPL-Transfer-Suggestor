@@ -1,26 +1,21 @@
-import Head from "next/head";
+useEffect(() => {
+  let mounted = true;
 
-export default function Home() {
-  return (
-    <>
-      <Head>
-        <meta
-          name="fc:miniapp"
-          content='{
-            "version": "1",
-            "imageUrl": "https://farcaster-fpl-transfer-suggestor.vercel.app/cover.png",
-            "button": {
-              "title": "Open Mini App",
-              "action": {
-                "type": "launch_frame",
-                "url": "https://farcaster-fpl-transfer-suggestor.vercel.app/api/frame"
-              }
-            }
-          }'
-        />
-      </Head>
+  async function initFarcaster() {
+    if (typeof window === "undefined") return;
 
-      {/* rest of UI */}
-    </>
-  );
-}
+    try {
+      const { actions } = await import("@farcaster/miniapp-sdk");
+
+      if (!mounted) return;
+
+      await actions.ready();
+      console.log("✅ Farcaster Mini App ready");
+    } catch (err) {
+      console.error("❌ Farcaster SDK init error:", err);
+    }
+  }
+
+  initFarcaster();
+  return () => { mounted = false };
+}, []);
