@@ -26,7 +26,6 @@ export default function Home() {
         }
 
         if (cancelled) return;
-
         await sdk.actions.ready();
         console.log("✅ Farcaster Mini App ready");
       } catch (err) {
@@ -124,20 +123,21 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-4 w-full max-w-sm mx-auto space-y-5">
+      {/* MAIN WRAPPER */}
+      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-6 w-full max-w-sm mx-auto flex flex-col space-y-6">
 
         {/* HEADER */}
-        <header className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">
+        <header className="text-center">
+          <h1 className="text-3xl font-extrabold tracking-tight">
             FPL Transfer Suggestor
           </h1>
-          <p className="text-gray-400 text-sm leading-snug">
-            Get a smart transfer based on your manager ID
+          <p className="text-gray-400 text-sm mt-2 leading-snug max-w-xs mx-auto">
+            Get a smart transfer based on your Fantasy Premier League squad.
           </p>
         </header>
 
-        {/* INPUT */}
-        <div className="space-y-2">
+        {/* INPUT CARD */}
+        <div className="w-full bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-3 shadow-lg">
           <label className="text-xs font-medium text-gray-400 tracking-wide">
             Manager ID
           </label>
@@ -146,7 +146,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
             type="text"
             value={managerId}
             onChange={(e) => setManagerId(e.target.value)}
-            placeholder="ex: 619981"
+            placeholder="e.g. 619981"
             className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
           />
 
@@ -157,6 +157,10 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           >
             {loading ? "Loading…" : "Get Suggestion"}
           </button>
+
+          <p className="text-[11px] text-gray-500 text-center mt-1">
+            You can find your Manager ID in the FPL website URL.
+          </p>
         </div>
 
         {/* ERROR */}
@@ -203,7 +207,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           </div>
         )}
 
-        {/* TEAM */}
+        {/* TEAM VIEW */}
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
@@ -216,7 +220,6 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
                     <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
                       {pos}
                     </h3>
-
                     {players.map((p, i) => (
                       <p
                         key={i}
@@ -233,10 +236,11 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
         })()}
 
         {/* FOOTER */}
-        <footer className="text-center text-gray-500 text-[10px] pt-2 pb-4">
+        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-4">
           Built for Farcaster Mini Apps • v1
         </footer>
       </div>
     </>
   );
 }
+
