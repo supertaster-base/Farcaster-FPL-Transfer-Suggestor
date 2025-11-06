@@ -78,7 +78,7 @@ export default function Home() {
         />
       </Head>
 
-      {/* ✅ Required meta for embed */}
+      {/* ✅ Required META for embed */}
       <FarcasterEmbedMeta />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 p-4">
@@ -88,3 +88,54 @@ export default function Home() {
 
         <label className="block mb-2 font-semibold">
           Enter Manager ID
+        </label>
+
+        <input
+          type="text"
+          value={managerId}
+          onChange={(e) => setManagerId(e.target.value)}
+          placeholder="e.g. 619981"
+          className="w-full p-3 rounded bg-gray-800 text-white border border-gray-700"
+        />
+
+        <button
+          onClick={runSuggestion}
+          disabled={loading}
+          className="mt-3 w-full p-3 rounded bg-purple-600 text-white font-bold disabled:opacity-50"
+        >
+          {loading ? "Loading…" : "Get Suggestion"}
+        </button>
+
+        {error && (
+          <p className="mt-4 text-red-400 font-semibold">
+            {error}
+          </p>
+        )}
+
+        {suggestion && (
+          <div className="mt-6 p-4 rounded bg-gray-800 border border-purple-600">
+            <h2 className="font-bold text-lg mb-2 text-purple-300">
+              Suggested Transfer
+            </h2>
+            <p>Out: {suggestion.out}</p>
+            <p>In: {suggestion.in}</p>
+            <p>Position: {suggestion.position}</p>
+            <p>Form: {suggestion.form}</p>
+          </div>
+        )}
+
+        {team?.length > 0 && (
+          <div className="mt-6 p-4 rounded bg-gray-900 border border-gray-700">
+            <h2 className="font-bold text-lg mb-2">Your Team</h2>
+            {team.map((p, i) => (
+              <p key={i}>
+                {p.name} — {p.position}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
