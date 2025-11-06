@@ -1,6 +1,3 @@
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
@@ -14,34 +11,32 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ FARCASTER `ready()` FIX — CLIENT-ONLY
-useEffect(() => {
-  // Only run client-side
-  if (typeof window === "undefined") return;
+  // ✅ FARCASTER READY — CLIENT-ONLY
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  let cancelled = false;
+    let cancelled = false;
 
-  async function initFarcaster() {
-    try {
-      const sdkModule = await import("@farcaster/miniapp-sdk");
-      const sdk = sdkModule.default || sdkModule;
+    async function initFarcaster() {
+      try {
+        const sdkModule = await import("@farcaster/miniapp-sdk");
+        const sdk = sdkModule.default || sdkModule;
 
-      if (!sdk?.actions?.ready) {
-        console.warn("⚠ miniapp.actions.ready not found");
-        return;
+        if (!sdk?.actions?.ready) {
+          console.warn("⚠ miniapp.actions.ready not found");
+          return;
+        }
+
+        if (cancelled) return;
+
+        await sdk.actions.ready();
+        console.log("✅ Farcaster Mini App ready");
+      } catch (err) {
+        console.error("❌ Farcaster SDK init failed:", err);
       }
-
-      if (cancelled) return;
-
-      await sdk.actions.ready();
-      console.log("✅ Farcaster Mini App ready");
-    } catch (err) {
-      console.error("❌ Farcaster SDK init failed", err);
     }
-  }
 
     initFarcaster();
-
     return () => {
       cancelled = true;
     };
@@ -87,3 +82,4 @@ useEffect(() => {
     </>
   );
 }
+
