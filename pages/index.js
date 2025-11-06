@@ -15,44 +15,30 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ✅ FARCASTER `ready()` FIX — CLIENT-ONLY
-  useEffect(() => {
-    let cancelled = false;
+useEffect(() => {
+  // Only run client-side
+  if (typeof window === "undefined") return;
 
-    async function initFarcaster() {
-      if (typeof window === "undefined") return;
+  let cancelled = false;
 
-      try {
-        const mod = await import("@farcaster/miniapp-sdk");
-        const miniapp = mod.default || mod;
+  async function initFarcaster() {
+    try {
+      const sdkModule = await import("@farcaster/miniapp-sdk");
+      const sdk = sdkModule.default || sdkModule;
 
-        function callReady() {
-          if (cancelled) return;
-
-          if (!miniapp?.actions?.ready) {
-            console.warn("⚠ miniapp.actions.ready missing");
-            return;
-          }
-
-          miniapp.actions
-            .ready()
-            .then(() => console.log("✅ Farcaster Mini App ready"))
-            .catch((err) =>
-              console.error("❌ ready() failed:", err)
-            );
-        }
-
-        // First attempt
-        callReady();
-
-        // Fallbacks — helps delayed shell load
-        window.addEventListener("focus", callReady);
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "visible") callReady();
-        });
-      } catch (err) {
-        console.error("❌ Farcaster SDK import failed:", err);
+      if (!sdk?.actions?.ready) {
+        console.warn("⚠ miniapp.actions.ready not found");
+        return;
       }
+
+      if (cancelled) return;
+
+      await sdk.actions.ready();
+      console.log("✅ Farcaster Mini App ready");
+    } catch (err) {
+      console.error("❌ Farcaster SDK init failed", err);
     }
+  }
 
     initFarcaster();
 
