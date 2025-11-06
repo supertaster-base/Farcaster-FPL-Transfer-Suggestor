@@ -68,85 +68,96 @@ export default function Home() {
     }
   }
 
- return (
-  <>
-    <Head>
-      <title>Farcaster FPL Transfer Suggestor</title>
-      <meta
-        name="description"
-        content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
-      />
-    </Head>
-
-    {/* Required META for embed */}
-    <FarcasterEmbedMeta />
-
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-6">
-
-      <header className="text-center space-y-1">
-        <h1 className="text-2xl font-bold">FPL Transfer Suggestor</h1>
-        <p className="text-gray-300 text-sm">
-          Get a smart transfer based on your manager ID
-        </p>
-      </header>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-300">
-          Enter Manager ID
-        </label>
-
-        <input
-          type="text"
-          value={managerId}
-          onChange={(e) => setManagerId(e.target.value)}
-          placeholder="e.g. 619981"
-          className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:border-purple-500 outline-none"
+  return (
+    <>
+      <Head>
+        <title>Farcaster FPL Transfer Suggestor</title>
+        <meta
+          name="description"
+          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
         />
+      </Head>
 
-        <button
-          onClick={runSuggestion}
-          disabled={loading}
-          className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-md disabled:opacity-50"
-        >
-          {loading ? "Loading…" : "Get Suggestion"}
-        </button>
-      </div>
+      {/* Required META for embed */}
+      <FarcasterEmbedMeta />
 
-      {error && (
-        <p className="text-red-400 font-semibold text-sm">
-          {error}
-        </p>
-      )}
-
-      {suggestion && (
-        <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="font-bold text-lg text-green-300">
-              Suggested Transfer
-            </h2>
-            <span className="text-xs text-gray-400 px-2 py-1 rounded bg-gray-700">
-              Live
-            </span>
-          </div>
-
-          <p className="text-md font-semibold">
-            <span className="text-gray-200">{suggestion.out}</span>
-            {" → "}
-            <span className="text-green-400">{suggestion.in}</span>
+      <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-6">
+        <header className="text-center space-y-1">
+          <h1 className="text-2xl font-bold">FPL Transfer Suggestor</h1>
+          <p className="text-gray-300 text-sm">
+            Get a smart transfer based on your manager ID
           </p>
+        </header>
 
-          <p className="text-sm text-gray-300">
-            Position: {suggestion.position} • Form: {suggestion.form}
-          </p>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-300">
+            Enter Manager ID
+          </label>
+
+          <input
+            type="text"
+            value={managerId}
+            onChange={(e) => setManagerId(e.target.value)}
+            placeholder="e.g. 619981"
+            className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:border-purple-500 outline-none"
+          />
+
+          <button
+            onClick={runSuggestion}
+            disabled={loading}
+            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-md disabled:opacity-50"
+          >
+            {loading ? "Loading…" : "Get Suggestion"}
+          </button>
         </div>
-      )}
 
-      {recent?.length > 0 && (
-        <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-2">
-          <h2 className="font-bold text-lg text-gray-200">
-            Recent Suggestions
-          </h2>
+        {error && (
+          <p className="text-red-400 font-semibold text-sm">{error}</p>
+        )}
 
-          {recent.map((p, i) => (
-            <p key={i} className="text-sm text-gray-300">
-              {p.out} → <span className="text-green-400">{p.in}</span>
+        {suggestion && (
+          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-lg text-green-300">
+                Suggested Transfer
+              </h2>
+              <span className="text-xs text-gray-400 px-2 py-1 rounded bg-gray-700">
+                Live
+              </span>
+            </div>
+
+            <p className="text-md font-semibold">
+              <span className="text-gray-200">{suggestion.out}</span>
+              {" → "}
+              <span className="text-green-400">{suggestion.in}</span>
+            </p>
+
+            <p className="text-sm text-gray-300">
+              Position: {suggestion.position} • Form: {suggestion.form}
+            </p>
+          </div>
+        )}
+
+        {recent?.length > 0 && (
+          <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-2">
+            <h2 className="font-bold text-lg text-gray-200">
+              Recent Suggestions
+            </h2>
+
+            {recent.map((p, i) => (
+              <p key={i} className="text-sm text-gray-300">
+                {p.out} → <span className="text-green-400">{p.in}</span>{" "}
+                ({p.position} • {p.form})
+              </p>
+            ))}
+          </div>
+        )}
+
+        <footer className="text-center text-gray-500 text-xs pt-6">
+          Built for Farcaster Mini Apps • v1
+        </footer>
+      </div>
+    </>
+  );
+}
+
