@@ -98,11 +98,14 @@ async function shareSuggestion() {
 
   const text = `I just improved my FPL team for next GW! ✅
 
+const text = `I just improved my FPL team for next GW! ✅
+
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
 See your recommended transfer:
-${shareUrl}
+
+https://farcaster-fpl-transfer-suggestor.vercel.app
 `;
 
   try {
