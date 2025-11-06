@@ -14,25 +14,48 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ✅ FARCASTER READY
-  useEffect(() => {
-    async function initFarcaster() {
-      if (typeof window === "undefined") return;
+useEffect(() => {
+  let cancelled = false;
 
-      try {
-        const miniappModule = await import("@farcaster/miniapp-sdk");
-        const miniapp = miniappModule.default || miniappModule;
+  async function initFarcaster() {
+    if (typeof window === "undefined") return;
 
+    try {
+      const mod = await import("@farcaster/miniapp-sdk");
+      const miniapp = mod.default || mod;
+
+      function callReady() {
+        if (cancelled) return;
         if (!miniapp?.actions?.ready) {
-          console.warn("⚠ miniapp.actions.ready missing", miniapp);
+          console.warn("⚠ miniapp.actions.ready missing");
           return;
         }
-
-        await miniapp.actions.ready();
-        console.log("✅ Farcaster Mini App ready");
-      } catch (err) {
-        console.error("❌ Farcaster SDK init failed:", err);
+        miniapp.actions
+          .ready()
+          .then(() => console.log("✅ Farcaster Mini App ready"))
+          .catch((err) => console.error("❌ ready() failed:", err));
       }
+
+      // ✅ initial call
+      callReady();
+
+      // ✅ fallback if shell loads slower
+      window.addEventListener("focus", callReady);
+      window.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") callReady();
+      });
+    } catch (err) {
+      console.error("❌ Farcaster SDK import failed:", err);
     }
+  }
+
+  initFarcaster();
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
+
 
     initFarcaster();
   }, []);
