@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import FarcasterHead from "../components/FarcasterHead";
 import FarcasterMiniAppMeta from "../components/FarcasterMiniAppMeta";
 
 export default function Home() {
@@ -63,7 +62,6 @@ export default function Home() {
       </Head>
 
       {/* ✅ Centralized meta — SAFE */}
-      <FarcasterHead />
       <FarcasterMiniAppMeta />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
