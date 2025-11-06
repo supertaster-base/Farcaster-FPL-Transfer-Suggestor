@@ -9,11 +9,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill manager ID
+  // ✅ NEW – track if app already showed a suggestion
+  const [hasSuggested, setHasSuggested] = useState(false);
+
+  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill Manager ID
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // ✅ Prefill previously stored manager ID
+    // Prefill Manager ID from localStorage
     const stored = localStorage.getItem("fpl_manager_id");
     if (stored) {
       setManagerId(stored);
@@ -26,12 +29,9 @@ export default function Home() {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
 
-        if (!sdk?.actions?.ready) {
-          console.warn("⚠ miniapp.actions.ready not found");
-          return;
-        }
-
+        if (!sdk?.actions?.ready) return;
         if (cancelled) return;
+
         await sdk.actions.ready();
         console.log("✅ Farcaster Mini App ready");
       } catch (err) {
@@ -69,19 +69,21 @@ export default function Home() {
         setSuggestion({
           none: true,
           message:
-            "✅ Your squad is in great shape — no obvious transfers needed this week! Holding your transfer might be the best move.",
+            "✅ Your squad looks strong — no obvious transfers needed this week! Saving a transfer might be the best play.",
         });
-        return;
+      } else {
+        // ✅ Valid suggestion
+        setSuggestion(data.suggestion);
       }
-
-      // ✅ Valid suggestion
-      setSuggestion(data.suggestion);
 
       const teamRes = await fetch(
         `/api/team?managerId=${encodeURIComponent(managerId)}`
       );
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
+
+      // ✅ Set flag so button text updates
+      setHasSuggested(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -128,7 +130,7 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
         <title>Farcaster FPL Transfer Suggestor</title>
         <meta
           name="description"
-          content="Get live Fantasy Premier League transfer suggestions directly inside Farcaster."
+          content="Get live Fantasy Premier League transfer suggestions inside Farcaster."
         />
       </Head>
 
@@ -155,7 +157,12 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
           <input
             type="text"
             value={managerId}
-            onChange={(e) => setManagerId(e.target.value)}
+            onChange={(e) => {
+              setManagerId(e.target.value);
+
+              // ✅ Reset button label when ID changes
+              setHasSuggested(false);
+            }}
             placeholder="e.g. 619981"
             className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
           />
@@ -165,7 +172,11 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
             disabled={loading}
             className="w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-md disabled:opacity-50"
           >
-            {loading ? "Loading…" : "Get Suggestion"}
+            {loading
+              ? "Loading…"
+              : hasSuggested
+              ? "Get Another Suggestion"
+              : "Get Suggestion"}
           </button>
 
           <p className="text-[11px] text-gray-500 text-center mt-1">
@@ -249,4 +260,5 @@ https://farcaster-fpl-transfer-suggestor.vercel.app
     </>
   );
 }
+
 
