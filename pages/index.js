@@ -5,7 +5,6 @@ import FarcasterEmbedMeta from "../components/FarcasterEmbedMeta";
 export default function Home() {
   const [managerId, setManagerId] = useState("");
   const [suggestion, setSuggestion] = useState(null);
-  const [recent, setRecent] = useState([]);
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -45,26 +44,39 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setSuggestion(null);
+    setTeam([]);
 
     try {
-      const res = await fetch(
-        `/api/suggest?managerId=${encodeURIComponent(managerId)}`
-      );
+      const res = await fetch(`/api/suggest?managerId=${encodeURIComponent(managerId)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
-
       setSuggestion(data.suggestion);
-      setRecent((prev) => [data.suggestion, ...prev.slice(0, 4)]);
 
-      const teamRes = await fetch(
-        `/api/team?managerId=${encodeURIComponent(managerId)}`
-      );
+      const teamRes = await fetch(`/api/team?managerId=${encodeURIComponent(managerId)}`);
       const teamData = await teamRes.json();
       setTeam(teamData.players || []);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function shareSuggestion() {
+    if (!suggestion) return;
+
+    const text = `✅ Suggested FPL Transfer:
+${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
+
+Try it yourself:
+https://farcaster-fpl-transfer-suggestor.vercel.app`;
+
+    try {
+      const sdkModule = await import("@farcaster/miniapp-sdk");
+      const sdk = sdkModule.default || sdkModule;
+      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`);
+    } catch (err) {
+      console.error("❌ Share failed:", err);
     }
   }
 
@@ -78,7 +90,6 @@ export default function Home() {
         />
       </Head>
 
-      {/* Required META for embed */}
       <FarcasterEmbedMeta />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-6">
@@ -116,7 +127,7 @@ export default function Home() {
         )}
 
         {suggestion && (
-          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-2">
+          <div className="p-4 rounded-md bg-gray-800 border border-purple-600 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-lg text-green-300">
                 Suggested Transfer
@@ -135,19 +146,25 @@ export default function Home() {
             <p className="text-sm text-gray-300">
               Position: {suggestion.position} • Form: {suggestion.form}
             </p>
+
+            <button
+              onClick={shareSuggestion}
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md"
+            >
+              Share Transfer
+            </button>
           </div>
         )}
 
-        {recent?.length > 0 && (
+        {team?.length > 0 && (
           <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-2">
             <h2 className="font-bold text-lg text-gray-200">
-              Recent Suggestions
+              Full Squad
             </h2>
 
-            {recent.map((p, i) => (
+            {team.map((p, i) => (
               <p key={i} className="text-sm text-gray-300">
-                {p.out} → <span className="text-green-400">{p.in}</span>{" "}
-                ({p.position} • {p.form})
+                {p.name} — {p.position}
               </p>
             ))}
           </div>
@@ -160,4 +177,3 @@ export default function Home() {
     </>
   );
 }
-
