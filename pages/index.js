@@ -62,10 +62,10 @@ export default function Home() {
     }
   }
 
-  async function shareSuggestion() {
-    if (!suggestion) return;
+async function shareSuggestion() {
+  if (!suggestion) return;
 
-    const text = `I just improved my FPL team for next GW! ✅
+  const text = `I just improved my FPL team for next GW! ✅
 
 Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
@@ -74,17 +74,17 @@ See your recommended transfer:
 https://farcaster-fpl-transfer-suggestor.vercel.app
 `;
 
-    try {
-      const sdkModule = await import("@farcaster/miniapp-sdk");
-      const sdk = sdkModule.default || sdkModule;
+  try {
+    const sdkModule = await import("@farcaster/miniapp-sdk");
+    const sdk = sdkModule.default || sdkModule;
 
-      await sdk.actions.openUrl(
-        `https://farcaster.xyz/compose?text=${encodeURIComponent(text)}`
-      );
-    } catch (err) {
-      console.error("❌ Share failed:", err);
-    }
+    await sdk.actions.openUrl(
+      `https://farcaster.com/~/compose?text=${encodeURIComponent(text)}`
+    );
+  } catch (err) {
+    console.error("❌ Share failed:", err);
   }
+}
 
   // ✅ Group players by position
   function groupTeam(players) {
