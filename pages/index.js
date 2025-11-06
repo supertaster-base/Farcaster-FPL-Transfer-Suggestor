@@ -79,6 +79,22 @@ export default function Home() {
       {/* ✅ INSERT HERE */}
       <FarcasterEmbedMeta />
 
+{/* --- SMOKE TEST BANNER --- */}
+<div
+  id="smoke-test"
+  style={{
+    padding: '16px',
+    margin: '16px',
+    borderRadius: '12px',
+    background: '#22C55E',
+    color: '#000',
+    fontWeight: 700,
+    textAlign: 'center',
+  }}
+>
+  ✅ Mini App UI rendered
+</div>
+
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
         {/* your page */}
       </div>
