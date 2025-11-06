@@ -78,64 +78,103 @@ export default function Home() {
         />
       </Head>
 
-      {/* ✅ Required META for embed */}
+      {/* ✅ Required META for Mini App embed */}
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 p-4">
-        <h1 className="text-xl font-bold mb-4 text-center">
-          FPL Transfer Suggestor
-        </h1>
+      <div className="min-h-screen w-full bg-[#0F172A] text-slate-100 p-4">
+        <div className="max-w-lg mx-auto space-y-6">
 
-        <label className="block mb-2 font-semibold">
-          Enter Manager ID
-        </label>
-
-        <input
-          type="text"
-          value={managerId}
-          onChange={(e) => setManagerId(e.target.value)}
-          placeholder="e.g. 619981"
-          className="w-full p-3 rounded bg-gray-800 text-white border border-gray-700"
-        />
-
-        <button
-          onClick={runSuggestion}
-          disabled={loading}
-          className="mt-3 w-full p-3 rounded bg-purple-600 text-white font-bold disabled:opacity-50"
-        >
-          {loading ? "Loading…" : "Get Suggestion"}
-        </button>
-
-        {error && (
-          <p className="mt-4 text-red-400 font-semibold">
-            {error}
-          </p>
-        )}
-
-        {suggestion && (
-          <div className="mt-6 p-4 rounded bg-gray-800 border border-purple-600">
-            <h2 className="font-bold text-lg mb-2 text-purple-300">
-              Suggested Transfer
-            </h2>
-            <p>Out: {suggestion.out}</p>
-            <p>In: {suggestion.in}</p>
-            <p>Position: {suggestion.position}</p>
-            <p>Form: {suggestion.form}</p>
+          {/* Title */}
+          <div className="text-center">
+            <h1 className="text-2xl font-bold tracking-tight">
+              FPL Transfer Suggestor
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              Get a smart transfer based on your manager ID
+            </p>
           </div>
-        )}
 
-        {team?.length > 0 && (
-          <div className="mt-6 p-4 rounded bg-gray-900 border border-gray-700">
-            <h2 className="font-bold text-lg mb-2">Your Team</h2>
-            {team.map((p, i) => (
-              <p key={i}>
-                {p.name} — {p.position}
+          {/* Card: Input */}
+          <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-slate-800">
+            <label className="block mb-2 font-semibold">
+              Enter Manager ID
+            </label>
+
+            <input
+              type="text"
+              value={managerId}
+              onChange={(e) => setManagerId(e.target.value)}
+              placeholder="e.g. 619981"
+              className="w-full p-3 rounded-lg bg-slate-900/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+            />
+
+            <button
+              onClick={runSuggestion}
+              disabled={loading || !managerId}
+              className="mt-3 w-full py-3 rounded-xl bg-[#4F46E5] hover:opacity-95 font-bold disabled:opacity-40 transition"
+            >
+              {loading ? "Fetching suggestion…" : "Get Suggestion"}
+            </button>
+
+            {error && (
+              <p className="mt-2 text-sm text-red-400">{error}</p>
+            )}
+          </div>
+
+          {/* Card: Result */}
+          {suggestion && (
+            <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-[#10B981]/40">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-bold text-[#10B981]">
+                  Suggested Transfer
+                </h2>
+                <span className="text-xs text-slate-400">Live</span>
+              </div>
+
+              <div className="text-xl">
+                <span className="font-semibold">{suggestion.out}</span>
+                <span className="mx-2 text-slate-400">→</span>
+                <span className="font-semibold text-[#10B981]">
+                  {suggestion.in}
+                </span>
+              </div>
+
+              <p className="text-sm text-slate-400 mt-2">
+                Position: {suggestion.position ?? "—"} • Form:{" "}
+                {suggestion.form ?? "—"}
               </p>
-            ))}
-          </div>
-        )}
+            </div>
+          )}
+
+          {/* Card: Recent */}
+          {recent.length > 0 && (
+            <div className="bg-[#1E293B] p-4 rounded-2xl shadow-md border border-slate-800">
+              <h3 className="font-bold mb-2">Recent Suggestions</h3>
+              <div className="divide-y divide-slate-800">
+                {recent.map((r, i) => (
+                  <div key={i} className="py-2 text-sm">
+                    <span className="font-medium">{r.out}</span>
+                    <span className="mx-2 text-slate-500">→</span>
+                    <span className="font-medium text-[#10B981]">
+                      {r.in}
+                    </span>
+                    <span className="ml-2 text-slate-500">
+                      ({r.position ?? "—"} • {r.form ?? "—"})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <p className="text-center text-xs text-slate-500">
+            Built for Farcaster Mini Apps • v1
+          </p>
+        </div>
       </div>
     </>
   );
 }
+
 
