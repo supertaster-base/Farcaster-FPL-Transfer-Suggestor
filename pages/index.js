@@ -65,20 +65,30 @@ export default function Home() {
   async function shareSuggestion() {
     if (!suggestion) return;
 
-    const text = `✅ Suggested FPL Transfer:
+    const baseUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://farcaster-fpl-transfer-suggestor.vercel.app";
+
+    const text = `I just improved my team for next gameweek! You should check out transfer suggestions for your team too.
+
+Suggested transfer:
 ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.form})
 
-Try it yourself:
-https://farcaster-fpl-transfer-suggestor.vercel.app`;
+${baseUrl}`;
 
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
       const sdk = sdkModule.default || sdkModule;
-      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`);
+
+      await sdk.actions.openUrl(
+        `https://farcaster.xyz/~/compose?text=${encodeURIComponent(text)}`
+      );
     } catch (err) {
       console.error("❌ Share failed:", err);
     }
   }
+
 
   return (
     <>
