@@ -89,6 +89,14 @@ ${baseUrl}`;
     }
   }
 
+// ✅ Group players by position
+function groupTeam(players) {
+  const groups = { GK: [], DEF: [], MID: [], FWD: [] };
+  players.forEach((p) => {
+    if (groups[p.position]) groups[p.position].push(p);
+  });
+  return groups;
+}
 
   return (
     <>
@@ -166,19 +174,32 @@ ${baseUrl}`;
           </div>
         )}
 
-        {team?.length > 0 && (
-          <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-2">
-            <h2 className="font-bold text-lg text-gray-200">
-              Full Squad
-            </h2>
+{team?.length > 0 && (() => {
+  const grouped = groupTeam(team);
 
-            {team.map((p, i) => (
-              <p key={i} className="text-sm text-gray-300">
-                {p.name} — {p.position}
+  return (
+    <div className="p-4 rounded-md bg-gray-900 border border-gray-700 space-y-4">
+      <h2 className="font-bold text-lg text-gray-200">Full Squad</h2>
+
+      {Object.entries(grouped).map(([pos, players]) =>
+        players.length > 0 ? (
+          <div key={pos} className="space-y-1">
+            <h3 className="text-purple-300 font-semibold text-sm">
+              {pos}
+            </h3>
+
+            {players.map((p, i) => (
+              <p key={i} className="text-sm text-gray-300 ml-2">
+                {p.name}
               </p>
             ))}
           </div>
-        )}
+        ) : null
+      )}
+    </div>
+  );
+})()}
+
 
         <footer className="text-center text-gray-500 text-xs pt-6">
           Built for Farcaster Mini Apps • v1
