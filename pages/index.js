@@ -1,5 +1,4 @@
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
@@ -14,9 +13,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  //
   // ✅ FARCASTER READY
-  //
   useEffect(() => {
     async function initFarcaster() {
       if (typeof window === "undefined") return;
@@ -40,9 +37,6 @@ export default function Home() {
     initFarcaster();
   }, []);
 
-  //
-  // ✅ SUGGESTION HANDLER
-  //
   async function runSuggestion() {
     setLoading(true);
     setError(null);
@@ -71,9 +65,6 @@ export default function Home() {
     }
   }
 
-  //
-  // ✅ RENDER
-  //
   return (
     <>
       <Head>
@@ -88,8 +79,14 @@ export default function Home() {
       <FarcasterMiniAppMeta />
 
       <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col md:flex-row relative overflow-hidden">
-        {/* TODO: Your UI */}
+        {/* TODO: your UI */}
       </div>
     </>
   );
 }
+
+// ✅ This prevents Next from prerendering and avoids SSR `useEffect` break
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
