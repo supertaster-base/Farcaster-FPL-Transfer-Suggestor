@@ -10,70 +10,32 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  //
-  // ✅ Load + Prefill Farcaster + Manager ID
-  //
+  // ✅ Initialize + Prefill manager ID
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const stored = localStorage.getItem("fpl_manager_id");
     if (stored) setManagerId(stored);
 
-    let cancelled = false;
-
-    async function initFarcaster() {
-      try {
-        const sdkModule = await import("@farcaster/miniapp-sdk");
-        const sdk = sdkModule.default || sdkModule;
-        if (!sdk?.actions?.ready) return;
-        if (cancelled) return;
-        await sdk.actions.ready();
-      } catch (err) {
-        console.error("❌ Farcaster SDK init failed:", err);
-      }
-    }
-
-    initFarcaster();
-    return () => (cancelled = true);
+    import("@farcaster/miniapp-sdk")
+      .then((mod) => (mod.default || mod).actions?.ready?.())
+      .catch(() => null);
   }, []);
 
-  //
-  // ✅ Get Popular FPL Transfers — Official API
-  //
+  // ✅ Fetch popular transfers
   useEffect(() => {
-    async function getPopular() {
+    async function load() {
       try {
-        const res = await fetch(
-          "https://fantasy.premierleague.com/api/bootstrap-static/"
-        );
+        const res = await fetch("/api/popular");
         const data = await res.json();
-        const players = data.elements;
-
-        const topIn = [...players].sort(
-          (a, b) => b.transfers_in_event - a.transfers_in_event
-        );
-        const topOut = [...players].sort(
-          (a, b) => b.transfers_out_event - a.transfers_out_event
-        );
-
-        const moves = [];
-        for (let i = 0; i < 2; i++) {
-          moves.push({
-            out: topOut[i].web_name,
-            in: topIn[i].web_name,
-          });
-        }
-        setPopular(moves);
+        setPopular(data?.popular || []);
       } catch (err) {
-        console.log("popular fetch fail", err);
+        console.error("❌ popular error", err);
       }
     }
-    getPopular();
+    load();
   }, []);
 
-  //
-  // ✅ Get Suggestion
-  //
   async function runSuggestion() {
     if (managerId) {
       localStorage.setItem("fpl_manager_id", managerId);
@@ -92,7 +54,7 @@ export default function Home() {
 
       if (!res.ok) throw new Error(data.error || "Error fetching suggestion");
 
-      if (!data.suggestion || !data.suggestion.in || !data.suggestion.out) {
+      if (!data.suggestion?.in || !data.suggestion?.out) {
         setSuggestion({
           none: true,
           message:
@@ -115,9 +77,6 @@ export default function Home() {
     }
   }
 
-  //
-  // ✅ Share
-  //
   async function shareSuggestion() {
     if (!suggestion) return;
 
@@ -165,155 +124,83 @@ ${shareUrl}
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-950 text-gray-100 px-3 py-6 flex flex-col space-y-6">
+      {/* ✅ full-width safe container */}
+      <div
+        className="min-h-screen text-gray-100 w-full mx-auto flex flex-col items-center"
+        style={{
+          background: "linear-gradient(#040a1a, #02040b)",
+        }}
+      >
+        <div className="w-full max-w-sm px-3 py-6 flex flex-col space-y-6">
 
-        {/* HEADER */}
-        <header className="text-center space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            FPL Transfer Suggestor
-          </h1>
-          <p className="text-gray-300 text-sm max-w-xs mx-auto leading-snug">
-            Get a smart transfer based on your Fantasy Premier League squad.
-          </p>
+          {/* HEADER */}
+          <header className="text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              FPL Transfer Suggestor
+            </h1>
+            <p className="text-gray-400 text-sm mt-2 leading-snug max-w-xs mx-auto">
+              Get a smart transfer based on your Fantasy Premier League squad.
+            </p>
+            <p className="text-[11px] text-gray-400 mt-1">
+              🔮 Powered by AI • Fixtures • Form • Injury risk
+            </p>
+          </header>
 
-          <p className="text-[11px] text-purple-300 mt-1">
-            🔮 Powered by AI • Fixtures • Form • Injury risk
-          </p>
-        </header>
+          {/* INPUT BLOCK */}
+          <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
+            <label className="text-xs font-medium text-gray-400">
+              Manager ID
+            </label>
 
-        {/* INPUT CARD */}
-        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
-          <label className="text-xs font-medium text-gray-400">
-            Manager ID
-          </label>
+            <input
+              type="text"
+              value={managerId}
+              onChange={(e) => setManagerId(e.target.value)}
+              placeholder="e.g. 619981"
+              className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
+            />
 
-          <input
-            type="text"
-            value={managerId}
-            onChange={(e) => setManagerId(e.target.value)}
-            placeholder="e.g. 619981"
-            className="w-full p-2 text-sm rounded-md bg-gray-800 text-white border border-gray-700 focus:border-purple-500 outline-none"
-          />
+            <button
+              onClick={runSuggestion}
+              disabled={loading}
+              className="w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-md disabled:opacity-50"
+            >
+              {loading
+                ? "Loading…"
+                : suggestion
+                ? "Get Another Suggestion"
+                : "Get Suggestion"}
+            </button>
 
-          <button
-            onClick={runSuggestion}
-            disabled={loading}
-            className="w-full text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-md disabled:opacity-50"
-          >
-            {loading
-              ? "Loading…"
-              : suggestion
-              ? "Get Another Suggestion"
-              : "Get Suggestion"}
-          </button>
-
-          <p className="text-[11px] text-gray-500 text-center mt-1 leading-tight">
-            You can find your Manager ID in your FPL profile
-            <br />
-            (Gameweek History URL)
-          </p>
-
-          <p className="text-center text-[11px] text-blue-400 underline">
-            Example
-          </p>
-        </div>
-
-        {/* Popular */}
-        {popular.length > 0 && (
-          <div className="text-center text-sm text-gray-200 space-y-1">
-            <p className="text-base">🔥 Popular moves this week:</p>
-
-            {popular.map((m, i) => (
-              <p key={i} className="text-gray-100">
-                {m.out} → <span className="text-green-300">{m.in}</span>
-              </p>
-            ))}
+            <p className="text-[11px] text-gray-500 text-center mt-1 leading-tight">
+              You can find your Manager ID in your
+              <br />
+              FPL Gameweek History URL
+            </p>
           </div>
-        )}
 
-        {/* ERROR */}
-        {error && (
-          <p className="text-red-400 font-medium text-xs text-center">
-            {error}
-          </p>
-        )}
+          {/* POPULAR TRANSFERS */}
+          <div className="w-full text-center text-sm text-gray-300 space-y-1">
+            <p className="font-medium">🔥 Popular moves this week:</p>
 
-        {/* SUGGESTED TRANSFER */}
-        {suggestion && (
-          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-base text-green-300">
-                Suggested Transfer
-              </h2>
-              <span className="text-[10px] text-gray-400 px-2 py-0.5 rounded bg-gray-700">
-                Live
-              </span>
-            </div>
-
-            {suggestion.in ? (
-              <>
-                <p className="text-sm font-semibold leading-snug">
-                  <span className="text-gray-200">{suggestion.out}</span>
-                  {" → "}
-                  <span className="text-green-400">{suggestion.in}</span>
+            {popular?.length > 0 ? (
+              popular.slice(0, 4).map((move, i) => (
+                <p key={i}>
+                  {move.out} → {move.in}
                 </p>
-
-                <p className="text-xs text-gray-300">
-                  Position: {suggestion.position} • Form: {suggestion.form}
-                </p>
-
-                <button
-                  onClick={shareSuggestion}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md text-sm"
-                >
-                  Share Transfer
-                </button>
-              </>
+              ))
             ) : (
-              <p className="text-sm text-gray-300 italic">
-                ✅ Your squad is already strong! Best to save your transfer this GW.
-              </p>
+              <p className="text-gray-600 text-xs">Loading…</p>
             )}
           </div>
-        )}
 
-        {/* TEAM */}
-        {team?.length > 0 && (() => {
-          const grouped = groupTeam(team);
-          return (
-            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
-              <h2 className="font-semibold text-base text-gray-200">
-                Full Squad
-              </h2>
-
-              {Object.entries(grouped).map(([pos, players]) =>
-                players?.length > 0 ? (
-                  <div key={pos} className="space-y-1">
-                    <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
-                      {pos}
-                    </h3>
-
-                    {players.map((p, i) => (
-                      <p
-                        key={i}
-                        className="text-xs text-gray-300 ml-2 leading-tight"
-                      >
-                        {p.name}
-                      </p>
-                    ))}
-                  </div>
-                ) : null
-              )}
-            </div>
-          );
-        })()}
-
-        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
-          Built for Farcaster Mini Apps • v1
-        </footer>
+          {/* FOOTER */}
+          <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
+            Built for Farcaster Mini Apps • v1
+          </footer>
+        </div>
       </div>
     </>
   );
 }
-
 
