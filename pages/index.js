@@ -6,10 +6,13 @@ export default function Home() {
   const [managerId, setManagerId] = useState("");
   const [suggestion, setSuggestion] = useState(null);
   const [team, setTeam] = useState([]);
+  const [popular, setPopular] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ FARCASTER READY + Prefill Manager ID
+  //
+  // ✅ Load + Prefill Farcaster + Manager ID
+  //
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -22,7 +25,8 @@ export default function Home() {
       try {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
-        if (!sdk?.actions?.ready || cancelled) return;
+        if (!sdk?.actions?.ready) return;
+        if (cancelled) return;
         await sdk.actions.ready();
       } catch (err) {
         console.error("❌ Farcaster SDK init failed:", err);
@@ -33,6 +37,43 @@ export default function Home() {
     return () => (cancelled = true);
   }, []);
 
+  //
+  // ✅ Get Popular FPL Transfers — Official API
+  //
+  useEffect(() => {
+    async function getPopular() {
+      try {
+        const res = await fetch(
+          "https://fantasy.premierleague.com/api/bootstrap-static/"
+        );
+        const data = await res.json();
+        const players = data.elements;
+
+        const topIn = [...players].sort(
+          (a, b) => b.transfers_in_event - a.transfers_in_event
+        );
+        const topOut = [...players].sort(
+          (a, b) => b.transfers_out_event - a.transfers_out_event
+        );
+
+        const moves = [];
+        for (let i = 0; i < 2; i++) {
+          moves.push({
+            out: topOut[i].web_name,
+            in: topIn[i].web_name,
+          });
+        }
+        setPopular(moves);
+      } catch (err) {
+        console.log("popular fetch fail", err);
+      }
+    }
+    getPopular();
+  }, []);
+
+  //
+  // ✅ Get Suggestion
+  //
   async function runSuggestion() {
     if (managerId) {
       localStorage.setItem("fpl_manager_id", managerId);
@@ -74,6 +115,9 @@ export default function Home() {
     }
   }
 
+  //
+  // ✅ Share
+  //
   async function shareSuggestion() {
     if (!suggestion) return;
 
@@ -92,6 +136,7 @@ ${shareUrl}
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
       const sdk = sdkModule.default || sdkModule;
+
       await sdk.actions.openUrl(
         `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
       );
@@ -120,35 +165,24 @@ ${shareUrl}
 
       <FarcasterEmbedMeta />
 
-      {/* ✅ Main Container w/ gradient + faded badge */}
-      <div className="min-h-screen w-full mx-auto px-3 py-6 relative overflow-hidden bg-gradient-to-b from-[#0a0f28] to-[#020410] text-gray-100 flex flex-col space-y-6">
-
-        {/* ✅ Faded background badge */}
-        <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
-          <img
-            src="/pl-badge.png"
-            alt=""
-            className="w-64 h-64 object-contain"
-          />
-        </div>
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-950 text-gray-100 px-3 py-6 flex flex-col space-y-6">
 
         {/* HEADER */}
-        <header className="text-center relative z-10">
+        <header className="text-center space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight">
             FPL Transfer Suggestor
           </h1>
-
-          <p className="text-gray-300 text-sm mt-2 leading-snug max-w-xs mx-auto">
+          <p className="text-gray-300 text-sm max-w-xs mx-auto leading-snug">
             Get a smart transfer based on your Fantasy Premier League squad.
           </p>
 
-          <div className="text-[10px] text-purple-300 mt-1">
+          <p className="text-[11px] text-purple-300 mt-1">
             🔮 Powered by AI • Fixtures • Form • Injury risk
-          </div>
+          </p>
         </header>
 
-        {/* INPUT BLOCK */}
-        <div className="relative z-10 w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
+        {/* INPUT CARD */}
+        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
           <label className="text-xs font-medium text-gray-400">
             Manager ID
           </label>
@@ -173,28 +207,29 @@ ${shareUrl}
               : "Get Suggestion"}
           </button>
 
-          {/* ✅ Example ID + CTA text */}
-          <div className="text-[11px] text-gray-500 text-center leading-tight">
+          <p className="text-[11px] text-gray-500 text-center mt-1 leading-tight">
             You can find your Manager ID in your FPL profile
             <br />
             (Gameweek History URL)
-            <br />
-            <a
-              href="https://fantasy.premierleague.com"
-              target="_blank"
-              className="text-purple-400 underline"
-            >
-              Example
-            </a>
-          </div>
+          </p>
 
-          {/* ✅ Micro CTA */}
-          {suggestion && (
-            <p className="text-[10px] text-purple-400 text-center">
-              New each time — try again!
-            </p>
-          )}
+          <p className="text-center text-[11px] text-blue-400 underline">
+            Example
+          </p>
         </div>
+
+        {/* Popular */}
+        {popular.length > 0 && (
+          <div className="text-center text-sm text-gray-200 space-y-1">
+            <p className="text-base">🔥 Popular moves this week:</p>
+
+            {popular.map((m, i) => (
+              <p key={i} className="text-gray-100">
+                {m.out} → <span className="text-green-300">{m.in}</span>
+              </p>
+            ))}
+          </div>
+        )}
 
         {/* ERROR */}
         {error && (
@@ -203,9 +238,9 @@ ${shareUrl}
           </p>
         )}
 
-        {/* ✅ Suggested Transfer */}
+        {/* SUGGESTED TRANSFER */}
         {suggestion && (
-          <div className="relative z-10 p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
+          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-base text-green-300">
                 Suggested Transfer
@@ -242,18 +277,11 @@ ${shareUrl}
           </div>
         )}
 
-        {/* ✅ Popular Transfers Block */}
-        <div className="relative z-10 text-center text-[11px] text-gray-400">
-          <p>🔥 Popular moves this week:</p>
-          <p>Watkins → Isak</p>
-          <p>Gabriel → Porro</p>
-        </div>
-
         {/* TEAM */}
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
-            <div className="relative z-10 p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
+            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
               <h2 className="font-semibold text-base text-gray-200">
                 Full Squad
               </h2>
@@ -264,6 +292,7 @@ ${shareUrl}
                     <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
                       {pos}
                     </h3>
+
                     {players.map((p, i) => (
                       <p
                         key={i}
@@ -279,11 +308,12 @@ ${shareUrl}
           );
         })()}
 
-        <footer className="relative z-10 text-center text-gray-500 text-[11px] pt-2 pb-6">
+        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
           Built for Farcaster Mini Apps • v1
         </footer>
       </div>
     </>
   );
 }
+
 
