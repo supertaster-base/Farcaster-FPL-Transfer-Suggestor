@@ -9,15 +9,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ FARCASTER READY — CLIENT-ONLY + Prefill manager ID
+  // ✅ FARCASTER READY + Prefill Manager ID
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // ✅ Prefill previously stored manager ID
     const stored = localStorage.getItem("fpl_manager_id");
-    if (stored) {
-      setManagerId(stored);
-    }
+    if (stored) setManagerId(stored);
 
     let cancelled = false;
 
@@ -25,10 +22,7 @@ export default function Home() {
       try {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
-
-        if (!sdk?.actions?.ready) return;
-        if (cancelled) return;
-
+        if (!sdk?.actions?.ready || cancelled) return;
         await sdk.actions.ready();
       } catch (err) {
         console.error("❌ Farcaster SDK init failed:", err);
@@ -36,9 +30,7 @@ export default function Home() {
     }
 
     initFarcaster();
-    return () => {
-      cancelled = true;
-    };
+    return () => (cancelled = true);
   }, []);
 
   async function runSuggestion() {
@@ -100,7 +92,6 @@ ${shareUrl}
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
       const sdk = sdkModule.default || sdkModule;
-
       await sdk.actions.openUrl(
         `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
       );
@@ -129,34 +120,35 @@ ${shareUrl}
 
       <FarcasterEmbedMeta />
 
-      {/* ✅ MAIN WRAPPER FIX — now fits mini-app correctly */}
-      <div
-        className="
-          min-h-screen
-          w-full
-          bg-gray-950
-          text-gray-100
-          px-4
-          py-4
-          flex
-          flex-col
-          space-y-6
-          overflow-x-hidden
-          box-border
-        "
-      >
+      {/* ✅ Main Container w/ gradient + faded badge */}
+      <div className="min-h-screen w-full mx-auto px-3 py-6 relative overflow-hidden bg-gradient-to-b from-[#0a0f28] to-[#020410] text-gray-100 flex flex-col space-y-6">
+
+        {/* ✅ Faded background badge */}
+        <div className="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
+          <img
+            src="/pl-badge.png"
+            alt=""
+            className="w-64 h-64 object-contain"
+          />
+        </div>
+
         {/* HEADER */}
-        <header className="text-center">
+        <header className="text-center relative z-10">
           <h1 className="text-3xl font-extrabold tracking-tight">
             FPL Transfer Suggestor
           </h1>
-          <p className="text-gray-400 text-sm mt-2 leading-snug max-w-xs mx-auto">
+
+          <p className="text-gray-300 text-sm mt-2 leading-snug max-w-xs mx-auto">
             Get a smart transfer based on your Fantasy Premier League squad.
           </p>
+
+          <div className="text-[10px] text-purple-300 mt-1">
+            🔮 Powered by AI • Fixtures • Form • Injury risk
+          </div>
         </header>
 
         {/* INPUT BLOCK */}
-        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm box-border">
+        <div className="relative z-10 w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
           <label className="text-xs font-medium text-gray-400">
             Manager ID
           </label>
@@ -181,21 +173,39 @@ ${shareUrl}
               : "Get Suggestion"}
           </button>
 
-          <p className="text-[11px] text-gray-500 text-center mt-1 leading-tight">
+          {/* ✅ Example ID + CTA text */}
+          <div className="text-[11px] text-gray-500 text-center leading-tight">
             You can find your Manager ID in your FPL profile
             <br />
             (Gameweek History URL)
-          </p>
+            <br />
+            <a
+              href="https://fantasy.premierleague.com"
+              target="_blank"
+              className="text-purple-400 underline"
+            >
+              Example
+            </a>
+          </div>
+
+          {/* ✅ Micro CTA */}
+          {suggestion && (
+            <p className="text-[10px] text-purple-400 text-center">
+              New each time — try again!
+            </p>
+          )}
         </div>
 
         {/* ERROR */}
         {error && (
-          <p className="text-red-400 font-medium text-xs">{error}</p>
+          <p className="text-red-400 font-medium text-xs text-center">
+            {error}
+          </p>
         )}
 
-        {/* SUGGESTED TRANSFER */}
+        {/* ✅ Suggested Transfer */}
         {suggestion && (
-          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm box-border">
+          <div className="relative z-10 p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-base text-green-300">
                 Suggested Transfer
@@ -232,11 +242,18 @@ ${shareUrl}
           </div>
         )}
 
+        {/* ✅ Popular Transfers Block */}
+        <div className="relative z-10 text-center text-[11px] text-gray-400">
+          <p>🔥 Popular moves this week:</p>
+          <p>Watkins → Isak</p>
+          <p>Gabriel → Porro</p>
+        </div>
+
         {/* TEAM */}
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
-            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm box-border">
+            <div className="relative z-10 p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
               <h2 className="font-semibold text-base text-gray-200">
                 Full Squad
               </h2>
@@ -262,7 +279,7 @@ ${shareUrl}
           );
         })()}
 
-        <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
+        <footer className="relative z-10 text-center text-gray-500 text-[11px] pt-2 pb-6">
           Built for Farcaster Mini Apps • v1
         </footer>
       </div>
