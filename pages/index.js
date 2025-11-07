@@ -9,7 +9,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Prefill manager ID + Farcaster init
+  // ✅ FARCASTER READY + Prefill
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -18,24 +18,25 @@ export default function Home() {
 
     let cancelled = false;
 
-    async function initFarcaster() {
+    async function init() {
       try {
         const sdkModule = await import("@farcaster/miniapp-sdk");
         const sdk = sdkModule.default || sdkModule;
-        if (!sdk?.actions?.ready || cancelled) return;
-        await sdk.actions.ready();
+        if (!sdk?.actions?.ready) return;
+        if (!cancelled) await sdk.actions.ready();
       } catch (err) {
         console.error("❌ Farcaster SDK init failed:", err);
       }
     }
 
-    initFarcaster();
+    init();
     return () => (cancelled = true);
   }, []);
 
-  // ✅ Request suggestion
   async function runSuggestion() {
-    if (managerId) localStorage.setItem("fpl_manager_id", managerId);
+    if (managerId) {
+      localStorage.setItem("fpl_manager_id", managerId);
+    }
 
     setLoading(true);
     setError(null);
@@ -73,7 +74,6 @@ export default function Home() {
     }
   }
 
-  // ✅ Share text
   async function shareSuggestion() {
     if (!suggestion) return;
 
@@ -86,11 +86,13 @@ ${suggestion.out} → ${suggestion.in} (${suggestion.position} • ${suggestion.
 
 Check out your suggested transfer:
 
-${shareUrl}`;
+${shareUrl}
+`;
 
     try {
       const sdkModule = await import("@farcaster/miniapp-sdk");
       const sdk = sdkModule.default || sdkModule;
+
       await sdk.actions.openUrl(
         `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
       );
@@ -101,7 +103,9 @@ ${shareUrl}`;
 
   function groupTeam(players) {
     const groups = { GK: [], DEF: [], MID: [], FWD: [] };
-    players.forEach((p) => groups[p.position]?.push(p));
+    players.forEach((p) => {
+      if (groups[p.position]) groups[p.position].push(p);
+    });
     return groups;
   }
 
@@ -117,14 +121,29 @@ ${shareUrl}`;
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 w-full max-w-sm mx-auto px-3 py-5 flex flex-col space-y-6">
-
+      {/* ✅ FIXED WIDTH + GRADIENT BACKGROUND */}
+      <div
+        className="
+          min-h-screen
+          text-gray-100
+          w-full
+          max-w-[420px]
+          mx-auto
+          px-3
+          py-6
+          flex
+          flex-col
+          space-y-6
+          overflow-x-hidden
+          bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950
+        "
+      >
         {/* HEADER */}
-        <header className="text-center px-2">
+        <header className="text-center">
           <h1 className="text-3xl font-extrabold tracking-tight">
             FPL Transfer Suggestor
           </h1>
-          <p className="text-gray-400 text-sm mt-2 leading-snug mx-auto">
+          <p className="text-gray-300 text-sm mt-2 leading-snug max-w-xs mx-auto">
             Get a smart transfer based on your Fantasy Premier League squad.
           </p>
 
@@ -159,16 +178,14 @@ ${shareUrl}`;
               : "Get Suggestion"}
           </button>
 
-          <p className="text-[11px] text-gray-500 text-center leading-tight">
-            You can find your Manager ID in your
-            <br />
-            FPL Gameweek History URL
+          <p className="text-[11px] text-gray-400 text-center leading-tight">
+            You can find your Manager ID in your FPL Gameweek History URL
           </p>
         </div>
 
         {/* ERROR */}
         {error && (
-          <p className="text-red-400 font-medium text-xs text-center">{error}</p>
+          <p className="text-red-400 font-medium text-xs">{error}</p>
         )}
 
         {/* SUGGESTED TRANSFER */}
@@ -203,9 +220,8 @@ ${shareUrl}`;
                 </button>
               </>
             ) : (
-              <p className="text-sm text-gray-300 italic text-center">
-                ✅ Your squad is already strong! Best to save your transfer this
-                GW.
+              <p className="text-sm text-gray-300 italic">
+                ✅ Your squad looks strong! Best to save your transfer this GW.
               </p>
             )}
           </div>
@@ -221,7 +237,7 @@ ${shareUrl}`;
               </h2>
 
               {Object.entries(grouped).map(([pos, players]) =>
-                players.length ? (
+                players?.length > 0 ? (
                   <div key={pos} className="space-y-1">
                     <h3 className="text-purple-300 font-semibold text-xs tracking-wider">
                       {pos}
@@ -241,7 +257,6 @@ ${shareUrl}`;
           );
         })()}
 
-        {/* FOOTER */}
         <footer className="text-center text-gray-500 text-[11px] pt-2 pb-6">
           Built for Farcaster Mini Apps • v1
         </footer>
