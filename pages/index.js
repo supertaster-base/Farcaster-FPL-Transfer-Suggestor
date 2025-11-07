@@ -129,8 +129,22 @@ ${shareUrl}
 
       <FarcasterEmbedMeta />
 
-      <div className="min-h-screen bg-gray-950 text-gray-100 px-3 py-6 w-full mx-auto flex flex-col space-y-6">
-
+      {/* ✅ MAIN WRAPPER FIX — now fits mini-app correctly */}
+      <div
+        className="
+          min-h-screen
+          w-full
+          bg-gray-950
+          text-gray-100
+          px-4
+          py-4
+          flex
+          flex-col
+          space-y-6
+          overflow-x-hidden
+          box-border
+        "
+      >
         {/* HEADER */}
         <header className="text-center">
           <h1 className="text-3xl font-extrabold tracking-tight">
@@ -142,7 +156,7 @@ ${shareUrl}
         </header>
 
         {/* INPUT BLOCK */}
-        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm">
+        <div className="w-full rounded-lg bg-gray-900 border border-gray-800 p-4 space-y-3 shadow-sm box-border">
           <label className="text-xs font-medium text-gray-400">
             Manager ID
           </label>
@@ -181,7 +195,7 @@ ${shareUrl}
 
         {/* SUGGESTED TRANSFER */}
         {suggestion && (
-          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm">
+          <div className="p-4 rounded-lg bg-gray-800 border border-purple-600 space-y-3 shadow-sm box-border">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-base text-green-300">
                 Suggested Transfer
@@ -222,7 +236,7 @@ ${shareUrl}
         {team?.length > 0 && (() => {
           const grouped = groupTeam(team);
           return (
-            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm">
+            <div className="p-4 rounded-lg bg-gray-900 border border-gray-700 space-y-4 shadow-sm box-border">
               <h2 className="font-semibold text-base text-gray-200">
                 Full Squad
               </h2>
